@@ -6,6 +6,7 @@ parts:
   chapters:
   - file: notebooks/enclosure_model
   - file: notebooks/appendix.md
+  - file: notebooks/code.md
 - caption: Ideas and Extensions
   chapters:
   - file: notes/partial_exclusive.md
