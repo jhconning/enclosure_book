@@ -274,7 +274,8 @@ def teopt(th, alp, c, lbar):
     elif zprime(1)>c:
         teopt = 1
     else:
-        teopt = ( ( ((1-alp)*(lam-1)*lbar**alp)/c)**(1/alp)  -1  )/(lam-1)
+        teopt =  ( lbar * (  ((1-alp)*(lam-1))/c)**(1/alp)  - 1)/(lam-1)
+
     return teopt
 
 
@@ -304,14 +305,14 @@ def tepvt(th, alp, c, lbar, mu):
         elif r0<c:
             tep = 0
         else:
-            tep = lbar * (lam/(lam-1)) * (th*(1-alp)/c )**(1/alp) - (1/(lam-1))
+            tep = lbar * ( lam/(lam-1)) * (th*(1-alp)/c )**(1/alp) - (1/(lam-1))
 
     return tep
 
 
 def tepvt_g(th, alp, c, lbar, mu):
     '''Private enclosure rate (global game refinement)
-        just like pvtpart() but adjuss for global game
+        just like pvtpart() but adjust for global game
         If theta < theta_hi then global game refinement says enclose fully if
         tep (from pvtpart) <= 0.5 otherwise no enclosre.
         '''
@@ -495,19 +496,19 @@ def socpart(c = 1, alp= 2/3, mu =0, soc_opt= True, cond_opt=True, pv_opt=False, 
 
 
 def prvpart(c = 1, alp= 2/3, full_diag = False, logpop=True, ax=None):
+# Plots the parameter regions in ln pop density - theta space
 
     if ax is None:
         fig, ax = plt.subplots(figsize=(10, 8))
     start = 1.1
     finish = 2.1
     cv = 1 / alp
-    the_1 = np.arange(1.1, finish, .01)
+    the_1 = np.arange(start, finish, .01)   
 
     ### Truncated range for the other stuff
 
     the_d = np.arange(.8, finish, .01)
 
-    #the_d = np.arange(1/alp, finish, .01)
     the_gg = np.arange(.8, cv, .01 )
 
     lo0 = ( c                      / ((the_1**(1/(1-alp)) - 1)*(1-alp))  ) **(1/alp)
@@ -517,7 +518,6 @@ def prvpart(c = 1, alp= 2/3, full_diag = False, logpop=True, ax=None):
         lo0, lo1 = np.log(lo0), np.log(lo1)
 
     ##### For these lines, we need separate plot ranges, so which run to the critical value
-
     the_r1 = np.arange(start, cv, .01)
     the_r2 = np.arange(cv, finish, .01)
 
@@ -527,6 +527,7 @@ def prvpart(c = 1, alp= 2/3, full_diag = False, logpop=True, ax=None):
     #lc0 = ( alp*c                  / (((the_r2*alp)**(1/(1-alp))*(1+alp) - alp)*(1-alp))  ) **(1/alp)
     lc1 = ( c                      / (the_r2*(1-alp)  ) ) **(1/alp)
     lc  = ( c/(the_r1 - 1))**(1/alp)
+
 
     if logpop:
         lc0, lc1, lc = np.log(lc0), np.log(lc1), np.log(lc)
@@ -582,6 +583,7 @@ def prvpart(c = 1, alp= 2/3, full_diag = False, logpop=True, ax=None):
     bbline1 = ax.plot(the_d, ln_pd0, color='red')
     bbline2 = ax.plot(the_d, ln_pd1, color='red')
     bbline3 = ax.plot(the_gg, ln_pdgg, color='red', linestyle='dashed')
+  
 
     vline1 = ax.axvline(1/alp, ymax=.95, linestyle=':', color='black')
     vline2 = ax.axvline(1, ymax=.95, linestyle=':', color='black')
@@ -622,8 +624,8 @@ def threeplots(th, alp, c, lbar=2, logpop=False):
     # z() plot
     teo= teopt(th, alp, c, lbar)
     tte = np.linspace(0,1,20)
-    tep = tepvt(th,alp,c, lbar, mu=0)
-    teg = tepvt_g(th,alp,c, lbar, mu=0)
+    tep = tepvt(th, alp,c, lbar, mu=0)
+    teg = tepvt_g(th, alp,c, lbar, mu=0)
 
     dwlp = dwlpct(th, alp, c, lbar)
 
@@ -665,6 +667,8 @@ def threeplots(th, alp, c, lbar=2, logpop=False):
     axP.set_xlim(0.9, 3)
     axP.set_ylim(0, 4)
     prvpart(c=c, alp=alp, full_diag=True, logpop=True, ax = axP)
-    
+    lo, lep = leo(teo, th, alp), le(tep, th, alp, 0)
+    lto, ltp = lo/(teo+0.001), lep/(tep+0.001)
+    print(f'optimal to ={teo:0.2f}, lo={lo:0.2f}, lo/to = {lto:0.2f};  private te={tep:0.2f}, le={lep:0.2f}, le/te = {ltp:0.2f}  ')
     plt.show()
     
