@@ -65,34 +65,34 @@ def leo(te, th, alp):
     return (lam*te)/(1+lam*te-te)
 
 def le(te, th, alp, mu):
-    '''eqn labor share on enclosed for given te when 
+    '''private eqn labor share on enclosed for given te when 
        (1-mu*alp*mu)*APL=MPL  
        mu = 0:   APLc = MPLe,   le* in paper
        mu = 1:   MPLc = MPLe,   leo in paper
        mu in (0,1)   in between partly secure
        '''
     lam = Lambda(th, alp, mu)
-    return (lam*te)/(1+lam*te-te)
+    return (lam*te)/(1+(lam-1)*te)
 
-def totalq(te, th, alp, mu):
+def totalq(te, th, alp, lbar, mu):
     '''total output in the economy given te and mu.
        Note costs of enclosure are not subtracted.'''
     leq = le(te, th, alp, mu)
-    return f(Tbar, Lbar,alp, th) * ( th*f(te, leq, alp, th) + f(1-te, 1-leq, alp, 1) )
+    return ( th * f(te, leq, alp, th) + f(1-te, 1-leq, alp, 1) ) * lbar**alp 
 
-def plotY(th = 1, lbar = 1, alp = 0.5,  c = 1, mu=0):
+def plotY(th=1, lbar = 1, alp = 0.5,  c = 1, mu=0):
     '''Plot total income net of clearing costs'''
-    te = np.linspace(0, 1.0, 20)
+    tte = np.linspace(0, 1.0, 20)
     plt.figure(figsize=(8,6))
     plt.title("Output net of enclosure costs as function of te")
-    plt.plot(te, ( totalq(te, th, alp, mu) ),  label= r'total' )
-    plt.plot(te, ( totalq(te, th, alp, mu)-c*te*Tbar),  label= r'total-cTe' )
+    plt.plot(tte, ( z(tte, th, alp, lbar) - c*tte ),  label= r'z-cTe' )
+    plt.plot(tte, ( z(tte, alp*th, alp, lbar) - c*tte),  label= r'total-cTe' )
     #plt.plot(te, req(te, th, alp, lbar, mu)*te*Tbar,  label= r'$r*Te$')
     #plt.plot(te, c*te*Tbar,   label= r'$c*Te$')
     teo = teopt(th, alp, c, lbar)
-    plt.axhline(totalq(0, th, alp, mu), xmin=0, xmax=1, linestyle=':', alpha=0.3)
+    plt.axhline(totalq(0, th, alp, lbar, mu), xmin=0, xmax=1, linestyle=':', alpha=0.3)
     plt.xlabel(r'$t_e$')
-    plt.xlim(0,1), plt.ylim(70, 120)
+    plt.xlim(0,1)
     plt.legend()
 
 
@@ -246,10 +246,17 @@ def simplempl2(te=1/2, alp=1/2, th=1, tlbar=Tbar/Lbar):
 
 def z(te, th, alp, lbar):
     '''output per unit land net of enclosure cost
-       $z(t_e) = \bar l^\alpha \left(1+(\Lambda^0-1)t_e\right)^{1-\alpha}-c\bar t_e$
-       To find optimal enclosure rate, given MPLs equalized '''
+       $z(t_e) = \bar l^\alpha \left(1+(\Lambda^0-1)t_e\right)^{1-\alpha}-c\bar t_e$ '''
     lam = th**(1/(1-alp))
     return lbar**alp * (1+(lam-1)*te)**(1-alp) 
+
+def zpv(te, th, alp, lbar):
+    '''output per unit land net of enclosure cost in a private economy
+       '''
+    lam = (alp*th)**(1/(1-alp))
+    return lbar**alp * (th*te*lam**alp +(1-te))/(1+(lam-1)*te)**alp 
+
+
 
 def zprime(te, th, alp, lbar):
     '''output per unit land net of enclosure cost
@@ -341,7 +348,7 @@ def dwl(th, alp, c, lbar):
     teg = tepvt_g(th,alp,c, lbar, mu=0)
 
     zo = z(teo, th, alp, lbar) - c*teo
-    zg = z(teg, th, alp, lbar) - c*teg
+    zg = zpv(teg, th, alp, lbar) - c*teg
     return  zo-zg
 
 def dwlpct(th, alp, c, lbar):
@@ -353,7 +360,7 @@ def dwlpct(th, alp, c, lbar):
     teg = tepvt_g(th,alp,c, lbar, mu=0)
 
     zo = z(teo, th, alp, lbar) - c*teo
-    zg = z(teg, th, alp, lbar) - c*teg
+    zg = zpv(teg, th, alp, lbar) - c*teg
     return  zg/zo
 
 
@@ -631,13 +638,14 @@ def threeplots(th, alp, c, lbar=2, logpop=False):
 
 
     # top right z(t_e) - c * t_e plot
-    axZ.scatter(teo, z(teo, th, alp, lbar)-c*teo, s=40, clip_on=False )
-    axZ.scatter(tep, z(tep, th, alp, lbar)-c*tep, s=40, clip_on=False,color='orange' )
-    axZ.scatter(teg, z(teg, th, alp, lbar)-c*teg, s=40, clip_on=False, marker='X', color='red' )
+    axZ.scatter(teo, z(teo, th, alp, lbar)-c*teo, s=40, clip_on=False)
+    axZ.scatter(tep, zpv(tep, th, alp, lbar) - c*tep, s=40, clip_on=False,color='orange' )  
+    axZ.scatter(teg, zpv(teg, th, alp, lbar) - c*teg, s=40, clip_on=False, marker='X', color='red' )
     axZ.axvline(teo, ymin=0, ymax=z(teo, th, alp, lbar) -c*teo,  linestyle='dashed')
-    axZ.axvline(tep, ymin=0, ymax=z(tep, th, alp, lbar)-c*tep ,  linestyle='dashed', color='orange')
+    axZ.axvline(tep, ymin=0, ymax=zpv(tep, th, alp, lbar)-c*tep ,  linestyle='dashed', color='orange')
 
     axZ.plot(tte, z(tte, th, alp, lbar) - c*tte )   
+    axZ.plot(tte, zpv(tte, th, alp, lbar) - c*tte )   
     axZ.set_xlim(0,1)
     #axZ.set_ylim(bottom=0, top=None)
     axZ.set_ylabel(r'$z(t_e)-c \cdot t_e $')
