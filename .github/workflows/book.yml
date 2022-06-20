@@ -29,7 +29,6 @@ jobs:
     # Build the documentation
     - name: Build pdocs
       run: |
-        pdoc --html --force --output-dir docs -c latex_math=True notebooks/enclose.py
         pdoc --math ./notebooks/enclose.py -o ./docs
     # Push the book's HTML to github-pages
     - name: GitHub Pages action
