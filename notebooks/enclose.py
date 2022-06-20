@@ -1,7 +1,7 @@
 # Code for Enclosure projects 
 # jupyter notebooks and code at https://github.com/jhconning/enclosure
 # Matthew J. Baker and Jonathan Conning
-
+__docformat__ = "numpy"
 # NOTES
 '''
 This module contains many functions for the analysis of a model of private land enclosures.
@@ -24,8 +24,9 @@ Tbar=100
 Lbar=100
 
 def f(T, L, a=1/2, th=1):
-    '''production technology on commons/un-enclosed land
-       $$f(T, L) = \\theta \\cdot T^{\\alpha}L^{1-\\alpha}$$ '''
+    '''production technology on commons/un-enclosed $x$ land
+       $$f(T, L) = \\theta \cdot T^{\\alpha}L^{1-\\alpha}$$ 
+       '''
     return th * T**(1-a) * L**a
 
 def mple(te, le, a=1/2, th=1, tlbar=Tbar/Lbar):
