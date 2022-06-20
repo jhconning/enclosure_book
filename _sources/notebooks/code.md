@@ -3,5 +3,5 @@
 Documentation for the enclose.py module:
 
 ```{raw} html
-:file: docs/enclose.html
+:file: ../docs/enclose.html
 ```
