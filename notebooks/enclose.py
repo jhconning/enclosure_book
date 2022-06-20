@@ -2,11 +2,19 @@
 # jupyter notebooks and code at https://github.com/jhconning/enclosure
 # Matthew J. Baker and Jonathan Conning
 
-# Things to fix
-# plotY doesnt account for Tbar/Lbar. rescale
-# check:  8/18/20 added mu option for most relevant functions
-# finish: tepvt for interior private..
+# NOTES
+'''
+This module contains many functions for the analysis of a model of private land enclosures.
+We use pdoc3 to generate documention for the API using command:
+   `pdoc --html --force --output-dir docs -c latex_math=True enclose.py`
+This will generate a html file in the docs directory. 
+All latex backslashes must be escaped (e.g. \\alpha) and math delimeter is $$.
 
+TODO:
+- Started to add mu to modify many but not all functions 
+  (to analyze case where partial security
+
+'''
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -16,15 +24,20 @@ Tbar=100
 Lbar=100
 
 def f(T, L, a=1/2, th=1):
-    '''production technology on commons/un-enclosed land'''
+    '''production technology on commons/un-enclosed land
+       $$f(T, L) = \\theta \\cdot T^{\\alpha}L^{1-\\alpha}$$ '''
     return th * T**(1-a) * L**a
 
 def mple(te, le, a=1/2, th=1, tlbar=Tbar/Lbar):
-    '''marginal product of Labor on enclosed land'''
+    '''marginal product of Labor on enclosed land can be written
+       $$MPL(t_e, l_e) = \\alpha \\cdot \\frac{f(t_e, l_e)}{l_e} \\bar l^\\alpha$$ 
+       since for Cobb Douglas $$MPL = \\alpha \\cdot APL$$'''
     return a* f(te,le,a,th)/le  * tlbar**(1-a)
 
 def aple(te, le, a=1/2, th=1, tlbar=Tbar/Lbar):
-    '''average product of Labor '''
+    '''Average product of Labor 
+    $$APL(t_e, l_e) = \\frac{f(T_e, L_e)}{L_e} =  \\frac{f(t_e, l_e)}{l_e} \cdot \\bar t^{1-\\alpha}$$ 
+    '''
     return f(te,le,a,th)/le  * tlbar**(1-a)
 
 def mpte(te, le, a=1/2, th=1, tlbar=Tbar/Lbar):
@@ -41,15 +54,19 @@ def aplu(te, le, a=1/2, th=1, tlbar=Tbar/Lbar):
     return aple(te, le, a, th, tlbar)
 
 def Lambda(th, alp, mu):
-    ''' Key expression for private enclosure.
-      mu = 0 : APL=MPL
-      mu = 1 : MPL = MPL etc
+    ''' Key parameter for expressions. Can return either private or planners Lambda:
+    $$\\mu = 0 \\rightarrow \\Lambda = (\\alpha \\theta)^\\frac{1}{1-\\alpha}$$
+    $$\\mu = 1 \\rightarrow \\Lambda_o = \\theta^\\frac{1}{1-\\alpha}$$
     '''
     return ( (alp*th)/(1-mu+alp*mu) )**(1/(1-alp))
 
 
 def req(te, th=1, alp=1/2, ltbar=1, mu=0):
-    '''Decentralized Equilibrium rental'''
+    '''Decentralized Equilibrium rental
+       $$r(t_e) =  \\theta f_T(t_e, l_e(t_e)) \\cdot \\bar t^\\alpha$$ 
+       $$r(t_e) =  \\frac{(1-\\alpha) \\theta  \\Lambda}{(1+(\\Lambda-1)t_e)^\\alpha}  \\cdot \\bar t^\\alpha$$ 
+
+    '''
     lam = Lambda(th, alp, mu)
     return (1-alp)*th * lam**alp * (1+(lam-1)*te)**(-alp) * (ltbar)**(alp)
 
@@ -57,7 +74,7 @@ def req(te, th=1, alp=1/2, ltbar=1, mu=0):
 def weq(te, th=1, alp=1/2, tlbar=1, mu =0):
     '''Decentralized Equilibrium wage'''
     lam = Lambda(th, alp, mu)
-    return (1-te+lam*te)**(1-alp) * (tlbar)**(1-alp)
+    return (1+(lam-1)*te)**(1-alp) * (tlbar)**(1-alp)
 
 def leo(te, th, alp):
     '''optimal labor allocation (from MPLe = MPLu) given enclosed land share te'''
@@ -246,22 +263,23 @@ def simplempl2(te=1/2, alp=1/2, th=1, tlbar=Tbar/Lbar):
 
 def z(te, th, alp, lbar):
     '''output per unit land net of enclosure cost
-       $z(t_e) = \bar l^\alpha \left(1+(\Lambda^0-1)t_e\right)^{1-\alpha}-c\bar t_e$ '''
+       $$z(t_e) = \\bar l^\\alpha \\left(1+(\\Lambda_o-1)t_e\\right)^{1-\\alpha}$$ '''
     lam = th**(1/(1-alp))
     return lbar**alp * (1+(lam-1)*te)**(1-alp) 
 
 def zpv(te, th, alp, lbar):
-    '''output per unit land net of enclosure cost in a private economy
-       '''
+    '''output per unit land net of enclosure cost  NEED TO ADJUST:
+       $$z_d(t_e)= \\bar l^\\alpha \\cdot \\frac{ 1+(\\frac{\\Lambda}{\\alpha}-1)t_e}{(1+(\\Lambda-1)t_e)^\\alpha}$$
+  '''
     lam = (alp*th)**(1/(1-alp))
     return lbar**alp * (th*te*lam**alp +(1-te))/(1+(lam-1)*te)**alp 
 
 
 
 def zprime(te, th, alp, lbar):
-    '''output per unit land net of enclosure cost
-       $z(t_e) = \bar l^\alpha \left(1+(\Lambda^0-1)t_e\right)^{1-\alpha}-c\bar t_e$
-       To find optimal enclosure rate, given MPLs equalized '''
+    '''derivative of planner's z(t_e) function
+       $$z(t_e) = \\bar l^\\alpha \\cdot (1-\\alpha)(\\Lambda_o -1) \\left(1+(\\Lambda_o-1)t_e \\right)^{-\\alpha}$$
+       '''
     lam = th**(1/(1-alp))
     return  (1-alp)*(lam-1)*lbar**alp  * (1+(lam-1)*te)**(-alp) 
 
