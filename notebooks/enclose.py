@@ -24,7 +24,7 @@ Tbar=100
 Lbar=100
 
 def f(T, L, a=1/2, th=1):
-    '''production technology on commons/un-enclosed $x$ land
+    '''production technology 
        $$f(T, L) = \\theta \cdot T^{\\alpha}L^{1-\\alpha}$$ 
        '''
     return th * T**(1-a) * L**a
@@ -32,7 +32,7 @@ def f(T, L, a=1/2, th=1):
 def mple(te, le, a=1/2, th=1, tlbar=Tbar/Lbar):
     '''marginal product of Labor on enclosed land can be written
        $$MPL(t_e, l_e) = \\alpha \\cdot \\frac{f(t_e, l_e)}{l_e} \\bar l^\\alpha$$ 
-       since for Cobb Douglas $$MPL = \\alpha \\cdot APL$$'''
+       since for Cobb Douglas $$MPL = \\alpha \\cdot APL$$. '''
     return a* f(te,le,a,th)/le  * tlbar**(1-a)
 
 def aple(te, le, a=1/2, th=1, tlbar=Tbar/Lbar):
