@@ -25,14 +25,14 @@ Lbar=100
 
 def f(T, L, a=1/2, th=1):
     '''production technology 
-       $$f(T, L) = \\theta \cdot T^{\\alpha}L^{1-\\alpha}$$ 
+       $$f(T, L) = \\theta \cdot T^{1-\\alpha}L^{\\alpha}$$ 
        '''
     return th * T**(1-a) * L**a
 
 def mple(te, le, a=1/2, th=1, tlbar=Tbar/Lbar):
     '''marginal product of Labor on enclosed land can be written
        $$MPL(t_e, l_e) = \\alpha \\cdot \\frac{f(t_e, l_e)}{l_e} \\bar l^\\alpha$$ 
-       since for Cobb Douglas $$MPL = \\alpha \\cdot APL$$. '''
+       since it is a Cobb Douglas $$MPL = \\alpha \\cdot APL$$. '''
     return a* f(te,le,a,th)/le  * tlbar**(1-a)
 
 def aple(te, le, a=1/2, th=1, tlbar=Tbar/Lbar):
@@ -286,13 +286,11 @@ def zprime(te, th, alp, lbar):
 
 
 def teopt(th, alp, c, lbar):
-    '''Social optimal enclosure
-        zprime= derivative of z. Determines efficient enclosure. If 
-        zprime(0)<c  : no enclosure 
-        zprime(1)>c  : full enclosure
-        zprime(0)>c and zprime(1)<c : partial enclosure
-           then solve for teopt from foc
-        '''
+    '''Planner enclosure rate. If partial then
+    $$t_e^o =  \\frac{\\bar l}{(\\Lambda_o - 1)} 
+    \\left [   \\frac{(1-\\alpha)(\\Lambda_o - 1)}{c} 
+    \\right ]^\\frac{1}{\\alpha} - \\frac{1}{(\\Lambda_o - 1)}
+    $$'''
     lam = th**(1/(1-alp))
     zprime = lambda te : (1-alp)*(lam-1)*lbar**alp  * (1+(lam-1)*te)**(-alp) 
     if zprime(0)<c:
@@ -312,6 +310,7 @@ def tepvt(th, alp, c, lbar, mu):
         r(1)>c  : full enclosure
         r(0)>c and r(1)<c : partial enclosure
            then solve for teopt from foc
+
         '''
     thresh = (1-mu+alp*mu)/alp    
     lam = Lambda(th, alp, mu)
