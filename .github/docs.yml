@@ -22,17 +22,15 @@ jobs:
     - name: Install dependencies
       run: |
         pip install -r requirements.txt
-    # Build the book
-    - name: Build the book
-      run: |
-        jupyter-book build .
+    
     # Build the documentation
     - name: Build pdocs
       run: |
         pdoc --math ./notebooks/enclose.py -o ./docs
-    # Push the book's HTML to github-pages
-    - name: GitHub Pages action
+
+    # Now push the pdoc content
+    - name: GitHub Pages action pdoc
       uses: peaceiris/actions-gh-pages@v3.5.9
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./_build/html
+        publish_dir: ./docs
