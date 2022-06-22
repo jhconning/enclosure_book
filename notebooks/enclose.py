@@ -1,7 +1,8 @@
 # Code for Enclosure projects 
 # jupyter notebooks and code at https://github.com/jhconning/enclosure
 # Matthew J. Baker and Jonathan Conning
-__docformat__ = "numpy"
+
+__version__ = 'dev'
 # NOTES
 '''
 This module contains many functions for the analysis of a model of private land enclosures.
@@ -24,34 +25,34 @@ Tbar=100
 Lbar=100
 
 def f(T, L, a=1/2, th=1):
-    '''production technology 
-       $$f(T, L) = \\theta \cdot T^{1-\\alpha}L^{\\alpha}$$ 
+    r'''Production technology 
+       $$f(T, L) = \theta \cdot T^{1-\alpha}L^{\alpha}$$ 
        '''
     return th * T**(1-a) * L**a
 
 def mple(te, le, a=1/2, th=1, tlbar=Tbar/Lbar):
-    '''marginal product of Labor on enclosed land can be written
-       $$MPL(t_e, l_e) = \\alpha \\cdot \\frac{f(t_e, l_e)}{l_e} \\bar l^\\alpha$$ 
-       since it is a Cobb Douglas $$MPL = \\alpha \\cdot APL$$. '''
+    r'''Marginal product of Labor on enclosed land can be written
+       $$MPL(t_e, l_e) = \alpha \cdot \frac{f(t_e, l_e)}{l_e} \bar l^\alpha$$ 
+       Since with a Cobb Douglas, $MPL = \alpha \cdot APL$.'''
     return a* f(te,le,a,th)/le  * tlbar**(1-a)
 
 def aple(te, le, a=1/2, th=1, tlbar=Tbar/Lbar):
-    '''Average product of Labor 
-    $$APL(t_e, l_e) = \\frac{f(T_e, L_e)}{L_e} =  \\frac{f(t_e, l_e)}{l_e} \cdot \\bar t^{1-\\alpha}$$ 
+    r'''Average product of Labor 
+    $$APL(t_e, l_e) = \frac{f(T_e, L_e)}{L_e} =  \frac{f(t_e, l_e)}{l_e} \cdot \bar t^{1-\alpha}$$ 
     '''
     return f(te,le,a,th)/le  * tlbar**(1-a)
 
 def mpte(te, le, a=1/2, th=1, tlbar=Tbar/Lbar):
-    '''marginal product of Land on enclosed land'''
+    '''Marginal product of Land on enclosed land'''
     return (1-a)* f(te,le,a,th)/te  * tlbar**(-a)
 
 def mplu(te, le, a=1/2, th=1, tlbar=Tbar/Lbar):
-    '''marginal product of Labor on unenclosed land
+    '''Marginal product of Labor on unenclosed land
        same tech but useful to have other name'''
     return mple(te, le, a, th, tlbar)
 
 def aplu(te, le, a=1/2, th=1, tlbar=Tbar/Lbar):
-    '''average product of Labor on unenclosed land'''
+    '''Average product of Labor on unenclosed land'''
     return aple(te, le, a, th, tlbar)
 
 def Lambda(th, alp, mu):
@@ -63,9 +64,9 @@ def Lambda(th, alp, mu):
 
 
 def req(te, th=1, alp=1/2, ltbar=1, mu=0):
-    '''Decentralized Equilibrium rental
-       $$r(t_e) =  \\theta f_T(t_e, l_e(t_e)) \\cdot \\bar t^\\alpha$$ 
-       $$r(t_e) =  \\frac{(1-\\alpha) \\theta  \\Lambda}{(1+(\\Lambda-1)t_e)^\\alpha}  \\cdot \\bar t^\\alpha$$ 
+    r'''Decentralized Equilibrium rental
+       $$r(t_e) =  \theta f_T(t_e, l_e(t_e)) \cdot \bar t^\alpha$$ 
+       $$r(t_e) =  \frac{(1-\\alpha) \theta  \Lambda}{(1+(\Lambda-1)t_e)^\alpha}  \cdot \bar t^\alpha$$ 
 
     '''
     lam = Lambda(th, alp, mu)
