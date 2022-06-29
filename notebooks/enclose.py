@@ -430,84 +430,86 @@ def plotdmg(te=1/2, alp=1/2, th=1, tlbar=Tbar/Lbar):
 
 ## Partition Diagrams from paper
 
-def socpart(c = 1, alp= 2/3, mu =0, soc_opt= True, cond_opt=True, pv_opt=False, logpop=True):
-    '''Plots loci determining parameter partitions corresponding to 
+def allpart(c = 1, alp= 2/3, mu =0, soc_opt= True, cond_opt=True, pv_opt=False, pv_gg=True,logpop=True, ax=None):
+    '''Plot loci determining parameter partitions corresponding to 
         Social (and Conditional Social) Optimum
         None, Full, or Partial Enclosure zones
         Option: to log plot or not
         '''
-    start, finish  = 1.1, 2.1   # range that will be plotted
-    the_1 = np.arange(start, finish, .01)
-    cv = 1 / alp                          # high TFP gain threshold
-    the_lo = np.arange(start, cv, .01)
-    the_hi = np.arange(cv, finish, .01)
+    # for aesthetics we have different plot domains for the different loci    
+    lostart, start, finish, step  = 0.8, 1.1, 2.1, 0.01   # domain boundary points
+    cv = 1 / alp                          # high TFP gain threshold 
+    the_1 = np.arange(start, finish, step)
+    the_lo = np.arange(start, cv, step)
+    the_hi = np.arange(cv, finish, step)
+    the_gg = np.arange(lostart, cv, step)  # below high threshold
+    the_d = np.arange(lostart, finish, step)      # above high threshold
     
     ## Social Optima
     lamO = the_1**(1/(1-alp))
-
     lo0 = ( c / ( (lamO - 1)*(1-alp) )  ) **(1/alp)
     lo1 = lamO * lo0      
 
-    ##### Conditional Optima:  we need separate plot ranges, each side of cv = theta_hat
+    ##### Conditional Optima:  separate plot ranges, each side of cv = theta_hat
     lam_hi =  Lambda(th = the_hi, alp= alp, mu = mu)
-
     lc  = ( c/(the_lo - 1))**(1/alp)
-    lc0 = ( alp*c                  / (( lam_hi*(1+alp) - alp)*(1-alp))  ) **(1/alp)
-    lc1 = ( c                      / (the_hi*(1-alp)  ) ) **(1/alp)
+    lc0 = ( alp*c / (( lam_hi*(1+alp) - alp)*(1-alp))  ) **(1/alp)
+    lc1 = ( c     / (the_hi*(1-alp)  ) ) **(1/alp)
 
-    ### Private Optima
-    #lam = (the_1*alp)**(1/(1-alp))
-    lam = Lambda(th = the_1, alp= alp, mu = mu)
+    ### Private Decentralized equilibia
+    lam = Lambda(th = the_d, alp= alp, mu = mu)
     ld0 = ( alp*c/( (1-alp)*lam)  ) **(1/alp)
-    ld1 = ( c / ( the_1*(1-alp) )  ) **(1/alp)
+    ld1 = ( c / ( the_d*(1-alp) )  ) **(1/alp)
+    lamg = Lambda(th = the_gg, alp= alp, mu = mu)
+    ldg =  ( alp*c / (1-alp*the_gg) *  (1-lamg)/lamg )**(1/alp)     
 
-    
+    if ax is None:
+        fig, ax = plt.subplots(figsize=(10, 8))
+
     if logpop:
         lc0, lc1, lc = np.log(lc0), np.log(lc1), np.log(lc)
         lo0, lo1 = np.log(lo0), np.log(lo1)
-        ld0, ld1 = np.log(ld0), np.log(ld1)
+        ld0, ld1, ldg = np.log(ld0), np.log(ld1), np.log(ldg)
 
-    fig, ax = plt.subplots(figsize=(10, 8))
-
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
-    ax.spines['left'].set_linewidth(2)
-    ax.spines['bottom'].set_linewidth(2)
-    xlbl = ax.set_xlabel(r'$\theta$', fontsize=20)
-    ylbl = ax.set_ylabel(r'$\overline{l}$', fontsize=18)
-
-    # Shift the label on the x-axis a little bit
-    xpos = list(xlbl.get_position())
-    xpos[0] = xpos[0]+.41
-    xpos[1] = xpos[1]-.02
-    ax.xaxis.set_label_coords(xpos[0], xpos[1])
-
-    ax.set_xticks([])
-    ax.set_ylim(0, 5)
-    if logpop:
         ax.set_yticks([])
         ax.autoscale()
-        ylbl = ax.set_ylabel(r'$ln(\overline{l})$', fontsize=18)
+        ax.set_ylabel(r'$ln(\overline{l})$', fontsize=18)
    
-    ep = np.max(the_1)+.021
+    ep = np.max(the_1)+.021  # end point for plot   
 
     if soc_opt:
-        oline1 = ax.plot(the_1, lo0, color= 'black')
-        bline1 = ax.plot(the_1, lo1, color= 'black')
-        t1 = ax.text(ep, np.min(lo0), r'$l^o_0$', fontsize=16)
-        t2 = ax.text(ep, np.min(lo1)+.05, r'$l^o_1$', fontsize=16)
+        slocus0 = ax.plot(the_1, lo0, color= 'black')
+        slocus1 = ax.plot(the_1, lo1, color= 'black')
+        ax.text(ep, np.min(lo0), r'$l^o_0$', fontsize=16)
+        ax.text(ep, np.min(lo1)+.05, r'$l^o_1$', fontsize=16)
 
     if cond_opt:
-        gline1 = ax.plot(the_hi, lc0, color= 'black', linestyle='dashed')
-        pline1 = ax.plot(the_hi, lc1, color= 'black', linestyle='dashed')
-        bkline = ax.plot(the_lo, lc,  color='black', linestyle='dashed')
-        t3 = ax.text(ep, np.min(lc0), r'$l^*_0$', fontsize=16)
-        t4 = ax.text(ep, np.min(lc1)-.05, r'$l^*_1$', fontsize=16)
-        t5 = ax.text(cv-.1, np.min(lc)-.04, r'$l^*$', fontsize=16)
+        clocus_lo = ax.plot(the_lo, lc,  color='black', linestyle='dashed')
+        clocus0 = ax.plot(the_hi, lc0, color= 'black', linestyle='dashed')
+        clocus1 = ax.plot(the_hi, lc1, color= 'black', linestyle='dashed')
+    
+        t3 = ax.text(ep, np.min(lc0), r'$l^c_0$', fontsize=16)
+        t4 = ax.text(ep, np.min(lc1)-.05, r'$l^c_1$', fontsize=16)
+        #t5 = ax.text(cv-.1, np.min(lc)-.04, r'$l^*$', fontsize=16)
 
     if pv_opt:
-        oline1 = ax.plot(the_1, ld0, color= 'red')
-        bline1 = ax.plot(the_1, ld1, color= 'red')
+        oline1 = ax.plot(the_d, ld0, color= 'red')
+        bline1 = ax.plot(the_d, ld1, color= 'red')
+        bbline3 = ax.plot(the_gg, ldg, color='red', linestyle='dashed')
+        ax.text(ep, np.min(ld0), r'$l^*_0$', fontsize=16)
+        ax.text(lostart, np.max(ld0), r'$l^*_0$', fontsize=16)
+        ax.text(ep, np.min(ld1)-.05, r'$l^*_1$', fontsize=16)
+        ax.text(lostart, np.max(ld1), r'$l^*_1$', fontsize=16)
+        #ax.text(cv-.1, np.min(lc)-.04, r'$l^*$', fontsize=16)
+
+    if pv_gg:     # plot just the global game locus below the threshold
+        above = len(the_gg)
+        ax.plot(the_d[above:], ld0[above:], color= 'red')
+        ax.plot(the_d[above:], ld1[above:], color= 'red')
+        ax.plot(the_gg, ldg, color='red', linestyle='dashed')
+        ax.text(ep, np.min(ld0), r'$l^*_0$', fontsize=16)
+        ax.text(ep, np.min(ld1)-.05, r'$l^*_1$', fontsize=16)
+        ax.text(lostart, np.max(ldg)-.04, r'$l^g$', fontsize=16)
 
     vline1 = ax.axvline((1-(1-alp)*mu)/alp, ymax=.95, linestyle=':', color='black')
     vline2 = ax.axvline(1, ymax=.95, linestyle=':', color='black')
@@ -515,137 +517,33 @@ def socpart(c = 1, alp= 2/3, mu =0, soc_opt= True, cond_opt=True, pv_opt=False, 
     ax.text(cv, np.min(lo0)-.5, r'$\frac{1}{\alpha}$', fontsize=16)
     ax.text(1, np.min(lo0)-.5, r'$1$', fontsize=16)
 
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.spines['left'].set_linewidth(2)
+    ax.spines['bottom'].set_linewidth(2)
+    xlbl = ax.set_xlabel(r'$\theta$', fontsize=20)
+    ylbl = ax.set_ylabel(r'$\overline{l}$', fontsize=18)
+    xpos = list(xlbl.get_position())      # Shift the label on the x-axis a little bit
+    ax.xaxis.set_label_coords(xpos[0]+0.41, xpos[1]-0.02)
+    ax.set_xticks([])
+
+
     #if cond_opt == False:
     #    fig.savefig('social_optimum.png')
     #else:
     #    fig.savefig('social_opt_cond.png')
 
-
-def prvpart(c = 1, alp= 2/3, full_diag = False, logpop=True, ax=None):
-# Plots the parameter regions in ln pop density - theta space
-
-    if ax is None:
-        fig, ax = plt.subplots(figsize=(10, 8))
-    start = 1.1
-    finish = 2.1
-    cv = 1 / alp
-    the_1 = np.arange(start, finish, .01)   
-
-    ### Truncated range for the other stuff
-
-    the_d = np.arange(.8, finish, .01)
-
-    the_gg = np.arange(.8, cv, .01 )
-
-    lo0 = ( c                      / ((the_1**(1/(1-alp)) - 1)*(1-alp))  ) **(1/alp)
-    lo1 = ( c*the_1**(alp/(1-alp)) / ((the_1**(1/(1-alp)) - 1)*(1-alp))  ) **(1/alp)
-
-    if logpop:
-        lo0, lo1 = np.log(lo0), np.log(lo1)
-
-    ##### For these lines, we need separate plot ranges, so which run to the critical value
-    the_r1 = np.arange(start, cv, .01)
-    the_r2 = np.arange(cv, finish, .01)
-
-    ### Conditional optimum commented out
-    lam = (the_r2*alp)**(1/(1-alp))
-    lc0 = ( alp*c                  / ( (1-alp) * ( lam*(1+alp) - alp) )  ) **(1/alp)
-    #lc0 = ( alp*c                  / (((the_r2*alp)**(1/(1-alp))*(1+alp) - alp)*(1-alp))  ) **(1/alp)
-    lc1 = ( c                      / (the_r2*(1-alp)  ) ) **(1/alp)
-    lc  = ( c/(the_r1 - 1))**(1/alp)
-
-
-    if logpop:
-        lc0, lc1, lc = np.log(lc0), np.log(lc1), np.log(lc)
-
-    ln_pd1  =  ( c / (the_d*(1-alp))) **(1/alp)  
-    Lamgg = (alp*the_gg)**(1/(1-alp))
-    ln_pdgg =  ( alp*c / (1-alp*the_gg) *  (1-Lamgg)/Lamgg )**(1/alp)                
-    ln_pd0  =  ( alp*c / ((1-alp)*(alp*the_d)**(1/(1-alp)))  ) **(1/alp) 
-
-    if logpop:
-        ln_pd0, ln_pd1, ln_pdgg = np.log(ln_pd0), np.log(ln_pd1), np.log(ln_pdgg)
-
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
-    ax.spines['left'].set_linewidth(2)
-    ax.spines['bottom'].set_linewidth(2)
-
-    xlbl = ax.set_xlabel(r'$\theta$', fontsize=26)
-    ylbl = ax.set_ylabel(r'$\overline{l}$', fontsize=26)
-
-    # Shift the label on the x-axis a little bit
-    xpos = list(xlbl.get_position())
-    xpos[0] = xpos[0]+.41
-    xpos[1] = xpos[1]-.02
-    ax.xaxis.set_label_coords(xpos[0], xpos[1])
-
-    #ax.set_xticks([])
-    ax.set_ylim(0,6)
-    if logpop:
-        #ax.set_yticks([])
-        ax.set_ylim(-0.5,4)
-        ax.autoscale()
-        ylbl = ax.set_ylabel(r'$ln(\overline{l})$', fontsize=18)   
-
-    ep = np.max(the_1)+.021
-    # Conditional optimum stuff commented out...
-
-    if full_diag:
-        oline1 = ax.plot(the_1, lo0, color= 'black')
-        bline1 = ax.plot(the_1, lo1, color= 'black')
-    #    gline1 = ax.plot(the_r2, ln_ps0, color= 'black', linestyle='dashed')
-    #    pline1 = ax.plot(the_r2, ln_ps1+.02, color= 'black', linestyle='dashed')
-    #    bkline = ax.plot(the_r1, ln_ps,  color='black', linestyle='dashed')
-
-        t1 = ax.text(ep, np.min(lo0), r'$l^o_0$', fontsize=16)
-        t2 = ax.text(ep, np.min(lo1)+.05, r'$l^o_1$', fontsize=16)
-    #    t3 = ax.text(ep, np.min(ln_ps0), r'$l^*_0$', fontsize=16)
-    #    t4 = ax.text(ep, np.min(ln_ps1)-.05, r'$l^*_1$', fontsize=16)
-    #    t5 = ax.text(cv-.1, np.min(ln_ps)+.34, r'$l^*$', fontsize=16)
-
-    ## Comment out the global game stuff..
-
-    bbline1 = ax.plot(the_d, ln_pd0, color='red')
-    bbline2 = ax.plot(the_d, ln_pd1, color='red')
-    bbline3 = ax.plot(the_gg, ln_pdgg, color='red', linestyle='dashed')
-  
-
-    vline1 = ax.axvline(1/alp, ymax=.95, linestyle=':', color='black')
-    vline2 = ax.axvline(1, ymax=.95, linestyle=':', color='black')
-
-    d1  = ax.text(ep, np.min(ln_pd0), r'$l^d_0$', fontsize=16)
-    dgg = ax.text(np.max(the_gg)-.3, np.min(ln_pdgg)+.4, r'$l^d$', fontsize=16)
-
-    if full_diag:
-    #    d2  = ax.text(ep+.05, np.min(ln_pd1)-.07, r' $l^d_1$', fontsize=16)
-        d2  = ax.text(ep, np.min(ln_pd1)-.07, r'$l^d_1$', fontsize=16)
-    else:
-        d2  = ax.text(ep, np.min(ln_pd1), r'$l^d_1$', fontsize=16)
-
-    if full_diag:
-        text1 = ax.text(cv, -1, r'$\frac{1}{\alpha}$', fontsize=16)
-        text2 = ax.text(1, -1, r'$1$', fontsize=16)
-    else:
-        text1 = ax.text(cv, np.min(ln_pd0)-.5, r'$\frac{1}{\alpha}$', fontsize=16)
-        text2 = ax.text(1, np.min(ln_pd0)-.5, r'$1$', fontsize=16)    
-
-   # if full_diag:
-   #     fig.savefig('nash_so_comp.png')
-   # else:
-   #     fig.savefig('nash_eq.png')
-
-def threeplots(th, alp, c, lbar=2, logpop=False):
+def threeplots(th, alp, c, lbar=2, soc_opt= True, cond_opt=True, pv_opt=False, pv_gg=True, logpop=False):
     '''
-    axP  :  left subplot overlap social/private; mostly drawn by prvpart()
+    axP  :  left subplot overlap social/private; mostly drawn by allpart()
     axZ  :  top right subplot planner's  z(t_e) - c * t_e
     axZP :  bottom right subplot r vs z' vs c
     
     '''
-    fig = plt.figure(figsize=(14, 8))
-    axZ= fig.add_subplot(2,2,2)
-    axZP= fig.add_subplot(2,2,4)
-    axP= fig.add_subplot(1,2,1)
+    fig  = plt.figure(figsize=(14, 8))
+    axZ  = fig.add_subplot(2,2,2)
+    axZP = fig.add_subplot(2,2,4)
+    axP  = fig.add_subplot(1,2,1)
     
     # z() plot
     teo= teopt(th, alp, c, lbar)
@@ -693,7 +591,8 @@ def threeplots(th, alp, c, lbar=2, logpop=False):
     axP.scatter(th, np.log(lbar), s=40)
     axP.set_xlim(0.9, 3)
     axP.set_ylim(0, 4)
-    prvpart(c=c, alp=alp, full_diag=True, logpop=True, ax = axP)
+    #prvpart(c=c, alp=alp, full_diag=True, logpop=True, ax = axP)
+    allpart(c = c, alp= alp, mu =0, soc_opt= soc_opt, cond_opt=cond_opt, pv_opt=pv_opt, pv_gg=pv_gg,logpop=True, ax=axP)  
     lo, lep = leo(teo, th, alp), le(tep, th, alp, 0)
     lto, ltp = lo/(teo+0.001), lep/(tep+0.001)
     print(f'optimal to ={teo:0.2f}, lo={lo:0.2f}, lo/to = {lto:0.2f};  private te={tep:0.2f}, le={lep:0.2f}, le/te = {ltp:0.2f}  ')
