@@ -466,6 +466,16 @@ def allpart(c = 1, alp= 2/3, mu =0, soc_opt= True, cond_opt=True, pv_opt=False, 
     if ax is None:
         fig, ax = plt.subplots(figsize=(10, 8))
 
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.spines['left'].set_linewidth(2)
+    ax.spines['bottom'].set_linewidth(2)
+    xlbl = ax.set_xlabel(r'$\theta$', fontsize=20)
+    ylbl = ax.set_ylabel(r'$\overline{l}$', fontsize=18)
+    xpos = list(xlbl.get_position())      # Shift the label on the x-axis a little bit
+    ax.xaxis.set_label_coords(xpos[0]+0.41, xpos[1]-0.02)
+    ax.set_xticks([])
+
     if logpop:
         lc0, lc1, lc = np.log(lc0), np.log(lc1), np.log(lc)
         lo0, lo1 = np.log(lo0), np.log(lo1)
@@ -478,8 +488,8 @@ def allpart(c = 1, alp= 2/3, mu =0, soc_opt= True, cond_opt=True, pv_opt=False, 
     ep = np.max(the_1)+.021  # end point for plot   
 
     if soc_opt:
-        slocus0 = ax.plot(the_1, lo0, color= 'black')
-        slocus1 = ax.plot(the_1, lo1, color= 'black')
+        slocus0 = ax.plot(the_1, lo0, color= 'black', alpha=0.2)
+        slocus1 = ax.plot(the_1, lo1, color= 'black', alpha=0.2)
         ax.text(ep, np.min(lo0), r'$l^o_0$', fontsize=16)
         ax.text(ep, np.min(lo1)+.05, r'$l^o_1$', fontsize=16)
 
@@ -517,15 +527,7 @@ def allpart(c = 1, alp= 2/3, mu =0, soc_opt= True, cond_opt=True, pv_opt=False, 
     ax.text(cv, np.min(lo0)-.5, r'$\frac{1}{\alpha}$', fontsize=16)
     ax.text(1, np.min(lo0)-.5, r'$1$', fontsize=16)
 
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
-    ax.spines['left'].set_linewidth(2)
-    ax.spines['bottom'].set_linewidth(2)
-    xlbl = ax.set_xlabel(r'$\theta$', fontsize=20)
-    ylbl = ax.set_ylabel(r'$\overline{l}$', fontsize=18)
-    xpos = list(xlbl.get_position())      # Shift the label on the x-axis a little bit
-    ax.xaxis.set_label_coords(xpos[0]+0.41, xpos[1]-0.02)
-    ax.set_xticks([])
+
 
 
     #if cond_opt == False:
