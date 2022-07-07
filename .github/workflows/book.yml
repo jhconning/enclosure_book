@@ -29,8 +29,8 @@ jobs:
     # Build the documentation
     - name: Build PDF
       run: |
-        jupyter-book build . --builder pdflatex
-        # pdoc --math ./notebooks/enclose.py -o ./docs
+      # jupyter-book build . --builder pdflatex
+      # pdoc --math ./notebooks/enclose.py -o ./docs
     # Push the book's HTML to github-pages
     - name: GitHub Pages action
       uses: peaceiris/actions-gh-pages@v3.5.9
@@ -38,15 +38,3 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./_build/html
 
-    # This next step moves, renames and commits the created pdf
-    - name: Commit and rename pdf
-      run: |
-        mv ./_build/latex/book.pdf book.pdf
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git add book.pdf
-        git commit -m "update PDF version of the book"
-    - name: Push changes
-      uses: ad-m/github-push-action@master
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
