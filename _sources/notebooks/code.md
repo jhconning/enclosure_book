@@ -1,18 +1,20 @@
 ---
 title: code
 created: 2022-06-17T22:32:11.985Z
-modified: 2022-06-21T13:33:19.813Z
+modified: 2022-07-13T22:04:22.028Z
 ---
+
 
 ## Code API
 
-Documentation for the enclose.py module produced with https://pdoc.dev/ and command line:
+Documentation for the enclose.py module is generated with https://pdoc.dev/ at the command line:
 
-`pdoc --math ./notebooks/enclose.py -o ./docs`
+`pdoc --html --force --output-dir docs -c latex_math=True enclose.py`
 
-This page is best viewed if you hide the left panel by clicking on the ☰:
+the resulting HTML page is embedded below. More room if you hide the left panel by clicking on the ☰:
 
+````{div} full-width
 ```{raw} html
-:file: ../docs/enclose.html
+:file: ../notebooks/docs/enclose.html
 ```
-`
+````
