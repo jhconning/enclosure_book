@@ -27,12 +27,14 @@ jobs:
       run: |
         jupyter-book build .
     # Build the documentation
-    - name: Build pdocs
+    - name: Build PDF
       run: |
-        pdoc --math ./notebooks/enclose.py -o ./docs
+      # jupyter-book build . --builder pdflatex
+      # pdoc --math ./notebooks/enclose.py -o ./docs
     # Push the book's HTML to github-pages
     - name: GitHub Pages action
       uses: peaceiris/actions-gh-pages@v3.5.9
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./_build/html
+
