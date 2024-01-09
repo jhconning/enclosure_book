@@ -5,21 +5,22 @@
 __version__ = 'dev'
 # NOTES
 '''
-This module contains many functions for the analysis of a model of private land enclosures.
-We use pdoc3 to generate documention for the API using command:
+This module contains functions for the analysis of a model of private land enclosures.
+The docstrings can use pdoc3 to generate documention for the API using command:
    `pdoc --html --force --output-dir docs -c latex_math=True enclose.py`
 This will generate a html file in the docs directory. 
-All latex backslashes must be escaped (e.g. \\alpha) and math delimeter is $$.
+In pdoc all latex backslashes must be escaped (e.g. \\alpha) and math delimeter is $$.
 
 TODO:
-- Started to add mu to modify many but not all functions 
-  (to analyze case where partial security
-
+- The parameter $mu$ is represented in some but not all functions
+  (to analyze case where partial security)
+- finalize the manufacturing case
 '''
 
 import numpy as np
 import matplotlib.pyplot as plt
 from ipywidgets import interact, fixed
+from IPython.display import display, Math, Markdown
 
 Tbar=100
 Lbar=100
@@ -56,24 +57,23 @@ def aplu(te, le, a=1/2, th=1, tlbar=Tbar/Lbar):
     return aple(te, le, a, th, tlbar)
 
 def Lambda(th, alp, mu):
-    ''' Key parameter for expressions. Can return either private or planners Lambda:
+    ''' Key term in expressions. Can return either private or planners 
+    Lambda:
     $$\\mu = 0 \\rightarrow \\Lambda = (\\alpha \\theta)^\\frac{1}{1-\\alpha}$$
     $$\\mu = 1 \\rightarrow \\Lambda_o = \\theta^\\frac{1}{1-\\alpha}$$
     '''
     return ( (alp*th)/(1-mu+alp*mu) )**(1/(1-alp))
 
-
 def req(te, th=1, alp=1/2, ltbar=1, mu=0):
-    r'''Decentralized Equilibrium rental
+    r'''Decentralized Equilibrium rental given t_e
        $$r(t_e) =  \theta f_T(t_e, l_e(t_e)) \cdot \bar t^\alpha$$ 
-       $$r(t_e) =  \frac{(1-\\alpha) \theta  \Lambda}{(1+(\Lambda-1)t_e)^\alpha}  \cdot \bar t^\alpha$$ 
+       $$r(t_e) =  \frac{(1-\alpha) \theta  \Lambda^\alpha}{(1+(\Lambda-1)t_e)^\alpha}  \cdot \bar t^\alpha$$ 
 
     '''
     lam = Lambda(th, alp, mu)
     return (1-alp)*th * lam**alp * (1+(lam-1)*te)**(-alp) * (ltbar)**(alp)
 
-
-def weq(te, th=1, alp=1/2, tlbar=1, mu =0):
+def weq(te, th=1, alp=1/2, tlbar=1, mu=0):
     '''Decentralized Equilibrium wage'''
     lam = Lambda(th, alp, mu)
     return (1+(lam-1)*te)**(1-alp) * (tlbar)**(1-alp)
@@ -84,7 +84,7 @@ def leo(te, th, alp):
     return (lam*te)/(1+lam*te-te)
 
 def le(te, th, alp, mu):
-    '''private eqn labor share on enclosed for given te when 
+    '''Private equilibrium labor share on enclosed for given te when 
        (1-mu*alp*mu)*APL=MPL  
        mu = 0:   APLc = MPLe,   le* in paper
        mu = 1:   MPLc = MPLe,   leo in paper
@@ -99,169 +99,6 @@ def totalq(te, th, alp, lbar, mu):
     leq = le(te, th, alp, mu)
     return ( th * f(te, leq, alp, th) + f(1-te, 1-leq, alp, 1) ) * lbar**alp 
 
-def plotY(th=1, lbar = 1, alp = 0.5,  c = 1, mu=0):
-    '''Plot total income net of clearing costs'''
-    tte = np.linspace(0, 1.0, 20)
-    plt.figure(figsize=(8,6))
-    plt.title("Output net of enclosure costs as function of te")
-    plt.plot(tte, ( z(tte, th, alp, lbar) - c*tte ),  label= r'z-cTe' )
-    plt.plot(tte, ( z(tte, alp*th, alp, lbar) - c*tte),  label= r'total-cTe' )
-    #plt.plot(te, req(te, th, alp, lbar, mu)*te*Tbar,  label= r'$r*Te$')
-    #plt.plot(te, c*te*Tbar,   label= r'$c*Te$')
-    teo = teopt(th, alp, c, lbar)
-    plt.axhline(totalq(0, th, alp, lbar, mu), xmin=0, xmax=1, linestyle=':', alpha=0.3)
-    plt.xlabel(r'$t_e$')
-    plt.xlim(0,1)
-    plt.legend()
-
-
-
-def plotle(te=1/2, th=1, alp=1/2, mu=0.5):
-    '''Draw edgeworth box and te/le(te) ratio'''
-    fig, ax = plt.subplots(figsize=(7,7))
-    tte = np.linspace(0,1,50)
-    leq = le(te, th, alp, mu=0)
-    leop = le(te, th, alp, mu=1)
-    ax.set_xlim(0,1)
-    ax.set_ylim(0,1)
-    ax.set_aspect('equal', 'box')
-    ax.plot(tte, le(tte, th, alp, mu=0), linewidth=2)
-    ax.plot(tte, le(tte, th, alp, mu=1), linewidth=2)  
-    ax.plot(tte, le(tte, th, alp, mu), linewidth=2) 
-    ax.plot([0,1],[0, 1],linestyle=':')
-    ax.plot([0,te],[0, leq],linestyle='-')
-    ax.scatter(te, leq, label='private')
-    ax.scatter(te, leop, label='social')
-    ax.axhline(y=leq, xmin=0, xmax=te, linestyle=':')
-    ax.axhline(y=leop, xmin=0, xmax=te, linestyle=':')
-    ax.axvline(x=te, ymin=0, ymax=leq, linestyle=':')
-    ax.axvline(x=te, ymin=0, ymax=leop, linestyle=':')
-    ax.set_xlabel(r'$t_e$', fontsize=15)
-    ax.set_ylabel(r'$l_e$', fontsize=15)
-    #lam = (th*alp)**(1/(1-alp))
-    #ax.text(0.05, 0.9, r'$\theta=$' +f'{th: 2.1f}' r', $\Lambda =$'
-    #      + f'{lam: 3.2f}' + r', $\ \ \ \frac{l_e}{t_e}=$'
-    #      + f'{leq/(te+0.001):3.1f}', fontsize=16)
-    ax.legend(loc='lower right', fontsize=14)
-    print(leq, leop)
-
-
-def plotreq(th=1, alp=1/2, tlbar=1, c=0, wplot=True):
-    '''plot rental rate as function of te
-       optionally also plot wages '''
-    tte = np.linspace(0,1,50)
-    fig, ax =  plt.subplots(figsize=(5,5))
-    r0 = req(0, th, alp, tlbar)
-    r1 = req(1, th, alp, tlbar)
-    ax.set_xlim(0,1)
-    #ax.set_ylim(0,2)
-    ax.plot(tte, req(tte, th, alp, tlbar),  label= r'$r$')
-    ax.set_xlabel(r'$t_e$', fontsize=15)
-    #ax.text(1.01,r1-0.025,r'$r^*(1)$',fontsize=13)
-    #ax.text(-0.13,r0-0.025,r'$r^*(0)$',fontsize=13)
-    ax.grid()
-    ax.axhline(y=c,linestyle='--', label=r'$c$')
-    if wplot:
-        ax.plot(tte, weq(tte, th, alp, tlbar), label= r'$w$')
-        # plot output net of enclosure costs relative to non-enclose output.
-        #ax.plot(tte,  (totalq(tte, th, alp) - c*tte*Tbar)/f(Tbar,Lbar,alp, th),label= r'$net$' )
-        
-    lam = (th*alp)**(1/(1-alp))
-    ax.legend()
-
-
-def plotmpts(te=1/2, alp=1/2, th=1, tlbar=Tbar/Lbar, mu = 0):
-    '''Plot partial eqn labor demand graph 
-       TODO: not yet working for mu different from 0'''
-    ll = np.linspace(0.0001, 0.9999, 400)
-    leop = leo(te, th, alp)         #optimal 
-    leam = le(te, th, alp, mu)      #private
-    WindowsError = weq(te, th, alp, tlbar)
-    we = weq(te, th, alp, tlbar)
-    wo = mple(te, leop, alp, th, tlbar)
-    wc = mplu(1-te, 1-leam, alp, 1, tlbar)
-    fig, ax = plt.subplots(figsize=(8,6))
-    #ax.spines['top'].set_visible(False)
-    mpe = mple(te, ll, alp, th, tlbar)
-    apu = aplu(1-te, 1-ll, alp, 1, tlbar)
-    mpu = mplu(1-te, 1-ll, alp, 1, tlbar)
-
-    ax.plot(ll, mpe, linewidth=2, color='k')
-    ax.plot(ll, apu, linewidth=2, color='k')
-    ax.plot(ll, mpu, linewidth=2, color='k')   
-    ax.fill_between(ll, mpe, mpu, 
-                    where=(ll>=leam)&(ll<=leop), 
-                    hatch= '//',
-                    color='none',
-                    edgecolor='k')
-
-    #ax.set_xlabel(r'$l_e$ - share')
-    ax.vlines(x=leam, ymin=0, ymax=we, linestyle=':') 
-    ax.vlines(x=leop, ymin=0, ymax=wo, 
-              linestyle=':') 
-    ax.axhline(we, linestyle=':')
-    ax.axhline(wc, linestyle=':')
-    ax.set_xticklabels([])
-    ax.set_yticklabels([])
-    ax.set_title('Labor Allocations, given '+r'$t_e$'+' = '+f'{te:2.2f}')
-    ax.set_ylim(0,1.5)
-    ax.set_xlim(0,1)
-    ax.text(1.01, we, r'$w_e$', fontsize=12)
-    ax.text(1.01, wc, r'$w_c$', fontsize=12)
-    ax.text(leam, -0.1, r'$l_e^*(t_e)$', fontsize=12,ha='center')
-    ax.text(leop, -0.1, r'$l_e^o(t_e)$', fontsize=12,ha='center')
-
-    ax.annotate(r'$MPL_c$',xy=(0.85, mplu(1-te, 0.15, alp, 1, tlbar)), 
-                textcoords="offset points", 
-                 xytext=(-30,20), fontsize=14)
-    ax.annotate(r'$APL_c$',xy=(0.65, aplu(1-te, 0.35, alp, 1, tlbar)), 
-                textcoords="offset points", 
-                 xytext=(-24,15), fontsize=14)
-    ax.annotate(r'$MPL_e$',xy=(0.8,  mple(te, 0.8, alp, th, tlbar)), 
-                textcoords="offset points", 
-                 xytext=(20,-20), fontsize=14)
-
-    labels = ['A', 'B', 'C', 'F', '', '', '', '', '0']
-    xx = [leam, leam,    leop, 1, 1, 1, leam, leop,0]
-    yy = [wc, we, wo, 0, we, wc, 0, 0, 0]    
-    for x, y, lab in zip(xx, yy, labels):
-        ax.scatter(x, y, marker='o', s=20, c ='k',clip_on=False ) 
-        plt.annotate(lab, (x,y), 
-                textcoords="offset points", # how to position the text
-                 xytext=(-5,7), # distance from text to points (x,y)
-                 ha='center', fontsize=12)
-    return fig, ax
-   
-
-def simplempl(te=1/2, alp=1/2, th=1, tlbar=Tbar/Lbar):
-    ll = np.linspace(0.001, 0.999, 50)
-    plt.figure(figsize=(10,6))
-    plt.plot(ll, mple(te, ll, alp, 1, tlbar)) 
-    plt.plot(ll, mplu(te, ll, 0.3, th, tlbar))
-    plt.plot(ll, aple(te, ll, alp, 1, tlbar))
-    plt.xlabel('l - labor')
-    plt.title('MPL and APL on enclosed and unenclosed lands')
-    plt.ylim(0,2)
-    plt.xlim(0,1)
-
-def simplempl2(te=1/2, alp=1/2, th=1, tlbar=Tbar/Lbar):
-    ll = np.linspace(0.001, 0.999, 50)
-    lnl = np.log(ll)
-    plt.figure(figsize=(10,6))
-    plt.plot(lnl, np.log(mple(te, ll, alp, 1, tlbar))) 
-    plt.plot(lnl, mplu(te, ll, 0.3, th, tlbar))
-    plt.plot(lnl, aple(te, ll, alp, 1, tlbar))
-    plt.xlabel('l - labor')
-    #plt.axvline(1-le(te, th, alp, mu=0), linestyle='-') 
-    #plt.axvline(le(te, alp, th, mu=1), ymin=0, ymax=0.25, linestyle=':') 
-    #plt.axhline(0.5,  linestyle=':') 
-    plt.title('MPL and APL on enclosed and unenclosed lands')
-    #plt.ylim(0,2)
-    #plt.xlim(0,1)
-
-
-
-## More plots 
 
 def z(te, th, alp, lbar):
     '''output per unit land net of enclosure cost
@@ -368,19 +205,183 @@ def dwl(th, alp, c, lbar):
 
     zo = z(teo, th, alp, lbar) - c*teo
     zg = zpv(teg, th, alp, lbar) - c*teg
-    return  zo-zg
+    return  zo, zg
 
 def dwlpct(th, alp, c, lbar):
     '''
     Returns actual/potential at each paramter
     '''
     teo= teopt(th, alp, c, lbar)
-    tep = tepvt(th,alp,c, lbar, mu=0)
-    teg = tepvt_g(th,alp,c, lbar, mu=0)
+    if th > (1/alp):
+        tep = tepvt(th,alp,c, lbar, mu=0)
+    else:
+        tep = tepvt_g(th,alp,c, lbar, mu=0)
 
     zo = z(teo, th, alp, lbar) - c*teo
-    zg = zpv(teg, th, alp, lbar) - c*teg
+    zg = zpv(tep, th, alp, lbar) - c*tep
     return  zg/zo
+
+
+
+## Plotting functions
+
+def plotY(th=1, lbar = 1, alp = 0.5,  c = 1, mu=0):
+    '''Plot total income net of clearing costs'''
+    tte = np.linspace(0, 1.0, 20)
+    plt.figure(figsize=(8,6))
+    plt.title("Output net of enclosure costs as function of te")
+    plt.plot(tte, ( z(tte, th, alp, lbar) - c*tte ),  label= r'z-cTe' )
+    plt.plot(tte, ( z(tte, alp*th, alp, lbar) - c*tte),  label= r'total-cTe' )
+    #plt.plot(te, req(te, th, alp, lbar, mu)*te*Tbar,  label= r'$r*Te$')
+    #plt.plot(te, c*te*Tbar,   label= r'$c*Te$')
+    teo = teopt(th, alp, c, lbar)
+    plt.axhline(totalq(0, th, alp, lbar, mu), xmin=0, xmax=1, linestyle=':', alpha=0.3)
+    plt.xlabel(r'$t_e$')
+    plt.xlim(0,1)
+    plt.legend()
+
+
+
+def plotle(te=1/2, th=1, alp=1/2, mu=0.5):
+    '''Draw edgeworth box and te/le(te) ratio'''
+    fig, ax = plt.subplots(figsize=(7,7))
+    tte = np.linspace(0,1,50)
+    leq = le(te, th, alp, mu=0)
+    leop = le(te, th, alp, mu=1)
+    ax.set_xlim(0,1)
+    ax.set_ylim(0,1)
+    ax.set_aspect('equal', 'box')
+    ax.plot(tte, le(tte, th, alp, mu=0), linewidth=2)
+    ax.plot(tte, le(tte, th, alp, mu=1), linewidth=2)  
+    ax.plot(tte, le(tte, th, alp, mu), linewidth=2) 
+    ax.plot([0,1],[0, 1],linestyle=':')
+    ax.plot([0,te],[0, leq],linestyle='-')
+    ax.scatter(te, leq, label='private')
+    ax.scatter(te, leop, label='social')
+    ax.axhline(y=leq, xmin=0, xmax=te, linestyle=':')
+    ax.axhline(y=leop, xmin=0, xmax=te, linestyle=':')
+    ax.axvline(x=te, ymin=0, ymax=leq, linestyle=':')
+    ax.axvline(x=te, ymin=0, ymax=leop, linestyle=':')
+    ax.set_xlabel(r'$t_e$', fontsize=15)
+    ax.set_ylabel(r'$l_e$', fontsize=15)
+    #lam = (th*alp)**(1/(1-alp))
+    #ax.text(0.05, 0.9, r'$\theta=$' +f'{th: 2.1f}' r', $\Lambda =$'
+    #      + f'{lam: 3.2f}' + r', $\ \ \ \frac{l_e}{t_e}=$'
+    #      + f'{leq/(te+0.001):3.1f}', fontsize=16)
+    ax.legend(loc='lower right', fontsize=14)
+    print(leq, leop)
+
+
+def plotreq(th=1, alp=1/2, tlbar=1, c=0, wplot=True):
+    '''plot rental rate as function of te
+       optionally also plot wages '''
+    tte = np.linspace(0,1,50)
+    fig, ax =  plt.subplots(figsize=(5,5))
+    r0 = req(0, th, alp, tlbar)
+    r1 = req(1, th, alp, tlbar)
+    ax.set_xlim(0,1)
+    #ax.set_ylim(0,2)
+    ax.plot(tte, req(tte, th, alp, tlbar),  label= r'$r$')
+    ax.set_xlabel(r'$t_e$', fontsize=15)
+    #ax.text(1.01,r1-0.025,r'$r^*(1)$',fontsize=13)
+    #ax.text(-0.13,r0-0.025,r'$r^*(0)$',fontsize=13)
+    ax.grid()
+    ax.axhline(y=c,linestyle='--', label=r'$c$')
+    if wplot:
+        ax.plot(tte, weq(tte, th, alp, tlbar), label= r'$w$')
+        # plot output net of enclosure costs relative to non-enclose output.
+        #ax.plot(tte,  (totalq(tte, th, alp) - c*tte*Tbar)/f(Tbar,Lbar,alp, th),label= r'$net$' )
+        
+    lam = (th*alp)**(1/(1-alp))
+    ax.legend()
+
+
+def plotmpts(te=1/2, alp=1/2, th=1, tlbar=Tbar/Lbar, mu = 0):
+    '''Plot partial eqn labor demand graph 
+       TODO: not yet working for mu different from 0'''
+    ll = np.linspace(0.0001, 0.9999, 400)
+    leop = leo(te, th, alp)         #optimal 
+    leam = le(te, th, alp, mu)      #private
+    we = weq(te, th, alp, tlbar)
+    wo = mple(te, leop, alp, th, tlbar)
+    wc = mplu(1-te, 1-leam, alp, 1, tlbar)
+    mpe = mple(te, ll, alp, th, tlbar)
+    apu = aplu(1-te, 1-ll, alp, 1, tlbar)
+    mpu = mplu(1-te, 1-ll, alp, 1, tlbar)
+
+    fig, ax = plt.subplots(figsize=(8,6))
+    ax.spines['top'].set_visible(False)
+    ax.plot(ll, mpe, linewidth=2, color='k')
+    ax.plot(ll, apu, linewidth=2, color='k')
+    ax.plot(ll, mpu, linewidth=2, color='k')   
+    ax.fill_between(ll, mpe, mpu, 
+                    where=(ll>=leam)&(ll<=leop), 
+                    hatch= '//',
+                    color='none',
+                    edgecolor='k')
+    ax.vlines(x=leam, ymin=0, ymax=we, linestyle=':') 
+    ax.vlines(x=leop, ymin=0, ymax=wo, 
+              linestyle=':') 
+    ax.axhline(we, linestyle=':')
+    ax.axhline(wc, linestyle=':')
+    ax.set_ylim(0,1.5)
+    ax.set_xlim(0,1)
+    ax.annotate(r'$MP_L^c$',xy=(0.85, mplu(1-te, 0.15, alp, 1, tlbar)), 
+                textcoords="offset points", 
+                 xytext=(-30,20), fontsize=14)
+    ax.annotate(r'$AP_L^c$',xy=(0.65, aplu(1-te, 0.35, alp, 1, tlbar)), 
+                textcoords="offset points", 
+                 xytext=(-24,15), fontsize=14)
+    ax.annotate(r'$MP_L^e$',xy=(0.8,  mple(te, 0.8, alp, th, tlbar)), 
+                textcoords="offset points", 
+                 xytext=(20,-20), fontsize=14)
+
+    xlabels = ['0', r'$l_e^*(t_e)$', r'$l_e^o(t_e)$','1']
+    ylabels = ['',r'$w_e$', r'$w_c$', r'$w_o$']
+    ax.set_xticks([0, leam, leop, 1],xlabels, fontsize=13)
+    #ax.set_yticks([0, we, wc, wo], ylabels, fontsize=13)
+
+    labels = ['A', '  C', '  E',   '', '']
+    xx = [leam, leam, leop, leam, leop]
+    yy = [wc,   we,   wo,   0,    0]    
+    for x, y, lab in zip(xx, yy, labels):
+        ax.scatter(x, y, marker='o', s=30, c ='k',clip_on=False ) 
+        plt.annotate(lab, (x,y), 
+                textcoords="offset points", # how to position the text
+                 xytext=(-5,7), # distance from text to points (x,y)
+                 ha='center', fontsize=12)
+    return fig, ax
+   
+
+def simplempl(te=1/2, alp=1/2, th=1, tlbar=Tbar/Lbar):
+    ll = np.linspace(0.001, 0.999, 50)
+    plt.figure(figsize=(10,6))
+    plt.plot(ll, mple(te, ll, alp, 1, tlbar)) 
+    plt.plot(ll, mplu(te, ll, 0.3, th, tlbar))
+    plt.plot(ll, aple(te, ll, alp, 1, tlbar))
+    plt.xlabel('l - labor')
+    plt.title('MPL and APL on enclosed and unenclosed lands')
+    plt.ylim(0,2)
+    plt.xlim(0,1)
+
+def simplempl2(te=1/2, alp=1/2, th=1, tlbar=Tbar/Lbar):
+    ll = np.linspace(0.001, 0.999, 50)
+    lnl = np.log(ll)
+    plt.figure(figsize=(10,6))
+    plt.plot(lnl, np.log(mple(te, ll, alp, 1, tlbar))) 
+    plt.plot(lnl, mplu(te, ll, 0.3, th, tlbar))
+    plt.plot(lnl, aple(te, ll, alp, 1, tlbar))
+    plt.xlabel('l - labor')
+    #plt.axvline(1-le(te, th, alp, mu=0), linestyle='-') 
+    #plt.axvline(le(te, alp, th, mu=1), ymin=0, ymax=0.25, linestyle=':') 
+    #plt.axhline(0.5,  linestyle=':') 
+    plt.title('MPL and APL on enclosed and unenclosed lands')
+    #plt.ylim(0,2)
+    #plt.xlim(0,1)
+
+
+
+## More plots 
 
 
 def plotz(th=1, alp=1/2, c=1, lbar=Lbar, ax=None):
@@ -391,12 +392,13 @@ def plotz(th=1, alp=1/2, c=1, lbar=Lbar, ax=None):
     tte = np.linspace(0,1,20)
     ax.scatter(teo, z(teo, th, alp, lbar) - c*teo, s=40, clip_on=False )
     ax.plot(tte, z(tte, th, alp, lbar) - c*tte)
+    #ax.plot(tte, z(tte, th, alp, lbar) )
     ax.set_xlim(0,1)
     ax.axvline(teo, ymin=0, ymax=z(teo, th, alp, lbar)-c*teo ,  linestyle='dashed')
     ax.set_xlabel(r'$t_e$'+' -- pct land enclosed')
     ax.set_ylabel(r'$z(t_e)$')
     ax.set_title(r'$z(t_e) - c\cdot t_e$')
-    #return ax
+    
 
 
 def plotzprime(th, alp, c, lbar):
@@ -494,9 +496,9 @@ def allpart(c = 1, alp= 2/3, mu =0, soc_opt= True, cond_opt=True, pv_opt=False, 
         ax.text(ep, np.min(lo1)+.05, r'$l^o_1$', fontsize=16)
 
     if cond_opt:
-        clocus_lo = ax.plot(the_lo, lc,  color='black', linestyle='dashed')
-        clocus0 = ax.plot(the_hi, lc0, color= 'black', linestyle='dashed')
-        clocus1 = ax.plot(the_hi, lc1, color= 'black', linestyle='dashed')
+        clocus_lo = ax.plot(the_lo, lc,  color='blue', linestyle='dashed')
+        clocus0 = ax.plot(the_hi, lc0, color= 'blue', linestyle='dashed')
+        clocus1 = ax.plot(the_hi, lc1, color= 'blue', linestyle='dashed',linewidth=2.5)
     
         t3 = ax.text(ep, np.min(lc0), r'$l^c_0$', fontsize=16)
         t4 = ax.text(ep, np.min(lc1)-.05, r'$l^c_1$', fontsize=16)
@@ -516,7 +518,7 @@ def allpart(c = 1, alp= 2/3, mu =0, soc_opt= True, cond_opt=True, pv_opt=False, 
         above = len(the_gg)
         ax.plot(the_d[above:], ld0[above:], color= 'red')
         ax.plot(the_d[above:], ld1[above:], color= 'red')
-        ax.plot(the_gg, ldg, color='red', linestyle='dashed')
+        ax.plot(the_gg, ldg, color='red', linestyle='-')
         ax.text(ep, np.min(ld0), r'$l^*_0$', fontsize=16)
         ax.text(ep, np.min(ld1)-.05, r'$l^*_1$', fontsize=16)
         ax.text(lostart, np.max(ldg)-.04, r'$l^g$', fontsize=16)
@@ -538,14 +540,15 @@ def allpart(c = 1, alp= 2/3, mu =0, soc_opt= True, cond_opt=True, pv_opt=False, 
 def threeplots(th, alp, c, lbar=2, soc_opt= True, cond_opt=True, pv_opt=False, pv_gg=True, logpop=False):
     '''
     axP  :  left subplot overlap social/private; mostly drawn by allpart()
-    axZ  :  top right subplot planner's  z(t_e) - c * t_e
+    axZ  :  top right subplot planner's  z(t_e) - c * t_e etc
     axZP :  bottom right subplot r vs z' vs c
     
     '''
     fig  = plt.figure(figsize=(14, 8))
+    axP  = fig.add_subplot(1,2,1)
     axZ  = fig.add_subplot(2,2,2)
     axZP = fig.add_subplot(2,2,4)
-    axP  = fig.add_subplot(1,2,1)
+    #axl  = fig.add_subplot(2,4,8)
     
     # z() plot
     teo= teopt(th, alp, c, lbar)
@@ -554,6 +557,7 @@ def threeplots(th, alp, c, lbar=2, soc_opt= True, cond_opt=True, pv_opt=False, p
     teg = tepvt_g(th, alp,c, lbar, mu=0)
 
     dwlp = dwlpct(th, alp, c, lbar)
+    zo, zg = dwl(th, alp, c, lbar)
 
 
     # top right z(t_e) - c * t_e plot
@@ -565,11 +569,12 @@ def threeplots(th, alp, c, lbar=2, soc_opt= True, cond_opt=True, pv_opt=False, p
 
     axZ.plot(tte, z(tte, th, alp, lbar) - c*tte )   
     axZ.plot(tte, zpv(tte, th, alp, lbar) - c*tte )   
+    #axZ.plot(tte, th*(1-alp)*lbar**alp  * Lambda(th, alp, 0)**alp/(1+(Lambda(th,alp,0)-1)*tte)**alp  - c*tte, color='green')     
     axZ.set_xlim(0,1)
     #axZ.set_ylim(bottom=0, top=None)
     axZ.set_ylabel(r'$z(t_e)-c \cdot t_e $')
     #Ypct = (z(teg, th, alp, lbar)-c*teg)/(z(teo, th, alp, lbar)-c*teo)
-    axZ.set_title(f'z-ct ({dwlp: .0%} potential)')
+    axZ.set_title(f'z-ct ((zo, zo-zg, %)={zo:0.3f}, {zo-zg:0.3f}, {dwlp: .0%} )')
 
 
     # z prime, r and c plot
@@ -580,7 +585,7 @@ def threeplots(th, alp, c, lbar=2, soc_opt= True, cond_opt=True, pv_opt=False, p
 
     axZP.axvline(teo, ymin=0, ymax=1 ,  linestyle='dashed')
     axZP.axvline(tep, ymin=0, ymax=1 ,  linestyle='dashed', color='orange')
-    axZP.plot(tte, zprime(tte, th, alp, lbar), label=r'$z \prime$' )
+    axZP.plot(tte, zprime(tte, th, alp, lbar), label=r'$z_o^\prime$' )
     axZP.set_xlim(0,1)
     axZP.set_xlabel(r'$t_e$'+' -- pct land enclosed')
     axZP.set_ylabel(r'$c, r(t_e), z \prime (t_e) $')
@@ -595,8 +600,24 @@ def threeplots(th, alp, c, lbar=2, soc_opt= True, cond_opt=True, pv_opt=False, p
     axP.set_ylim(0, 4)
     #prvpart(c=c, alp=alp, full_diag=True, logpop=True, ax = axP)
     allpart(c = c, alp= alp, mu =0, soc_opt= soc_opt, cond_opt=cond_opt, pv_opt=pv_opt, pv_gg=pv_gg,logpop=True, ax=axP)  
+
+    plt.show()
+    
+    
+
+    
+
+def gaps(th, alp, c):
+    dwlp = dwlpct(th, alp, c, lbar)
+    dwla = dwl(th, alp, c, lbar)
     lo, lep = leo(teo, th, alp), le(tep, th, alp, 0)
     lto, ltp = lo/(teo+0.001), lep/(tep+0.001)
-    print(f'optimal to ={teo:0.2f}, lo={lo:0.2f}, lo/to = {lto:0.2f};  private te={tep:0.2f}, le={lep:0.2f}, le/te = {ltp:0.2f}  ')
-    plt.show()
+    display(Math(
+       rf't_e^o ={teo:0.2f}, l_e^o={lo:0.2f}, \bar l_e = {lto:0.2f}'
+       ))
+    print(f'z(teo)-c te0 = {z(teo, th, alp, lbar)-c*teo:0.2f}, z(tep) = {z(tep, th, alp, lbar)-c*tep:0.2f}, z(teg) = {z(teg, th, alp, lbar)-c*teg:0.2f}')   
+    
+    display(Math(
+        rf'1st = {z(teo, th, alp, lbar)-c*teo:0.2f}, Pvt = {z(tep, th, alp, lbar)-c*tep:0.2f}, Pvg = {z(teg, th, alp, lbar)-c*teg:0.2f}'        
+        ))
     

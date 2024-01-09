@@ -31,15 +31,8 @@ parse:
   myst_enable_extensions:  # default extensions to enable in the myst parser. See https://myst-parser.readthedocs.io/en/latest/using/syntax-optional.html
     - amsmath
     - colon_fence
-    - figure-md
-    - deflist
     - dollarmath
-    - html_admonition
-    - html_image
     - linkify
-    - replacements
-    - smartquotes
-    - substitution
 
 # Add GitHub buttons to your book
 # See https://jupyterbook.org/customize/config.html#add-a-link-to-your-repository
@@ -48,3 +41,7 @@ html:
   use_repository_button: true
 
 only_build_toc_files: true
+
+sphinx:
+  config:
+    html_extra_path: uruk/cdli-imagery

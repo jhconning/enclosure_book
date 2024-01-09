@@ -4,3 +4,6 @@ _build/**
 .notable/**
 .vscode/**
 attachments/**
+EnclosureBook.code-workspace
+.imdone/**
+attachments/
