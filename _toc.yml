@@ -1,7 +1,7 @@
 format: jb-book
 root: content
 
-parts:_
+parts:
 - caption: Model
   chapters:
   - file: notebooks/enclosure_model
