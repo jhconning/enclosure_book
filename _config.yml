@@ -44,4 +44,4 @@ only_build_toc_files: true
 
 sphinx:
   config:
-    html_extra_path: uruk/cdli-imagery
+    html_extra_path: ['docs']

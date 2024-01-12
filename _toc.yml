@@ -7,6 +7,8 @@ parts:
   - file: notebooks/enclosure_model
   - file: notebooks/appendix.md
   - file: notebooks/code.md
+  - url: https://jhconning.github.io/enclosure_book/docs/enclose.html
+    title: Code API
 - caption: Ideas and Extensions
   chapters:
   - file: notes/partial_exclusive.md
