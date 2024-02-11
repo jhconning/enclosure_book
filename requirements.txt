@@ -2,7 +2,9 @@ jupyter-book
 matplotlib
 numpy
 ipywidgets
+scipy
 pdoc3
+
 
 
 
