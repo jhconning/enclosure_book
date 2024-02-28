@@ -344,7 +344,7 @@ document.write(`
 </ul>
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#id1"></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Appendix</a><ul class="nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#earlier-appendix-notes">Earlier Appendix notes</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#socially-optimal">Socially Optimal</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#social-enclosure-decisions">Social Enclosure decisions</a></li>
 </ul>
@@ -385,32 +385,38 @@ y(t_e,l_e)=\frac{Y}{\bar T}=\left[\theta\cdot F(t_e,l_e)+F(1-t_e,1-l_e)\right ]\
 <p>where we have used the fact that for our Cobb-Douglass <span class="math notranslate nohighlight">\(F(\bar T,\bar L) =\bar T^{1-\alpha} \bar L^\alpha\)</span> we find <span class="math notranslate nohighlight">\(\frac{F(\bar T, \bar L)}{\bar T}=\bar l^\alpha\)</span> where <span class="math notranslate nohighlight">\(\bar l =\frac{\bar L}{\bar T}\)</span>​​ measures the economy-wide labor-land endowment ratio, or population density.</p>
 <section id="labor-intensity-in-the-enclosed-sector-l-e-t-e">
 <h3>Labor intensity in the enclosed sector <span class="math notranslate nohighlight">\(l_e(t_e)\)</span><a class="headerlink" href="#labor-intensity-in-the-enclosed-sector-l-e-t-e" title="Permalink to this heading">#</a></h3>
-<p>Recall that we found expressions for how labor would be allocated to the enclosed areas, for any given enclosure rate <span class="math notranslate nohighlight">\(t_e\)</span>.  Broadly we can write:
-$<span class="math notranslate nohighlight">\(
+<p>Recall that we found expressions for how labor would be allocated to the enclosed areas, for any given enclosure rate <span class="math notranslate nohighlight">\(t_e\)</span>.  Broadly we can write:</p>
+<div class="math notranslate nohighlight">
+\[
 l_e(t_e)=\frac{\Lambda_\mu t_e}{1-(\Lambda_\mu-1)t_e}
-\)</span><span class="math notranslate nohighlight">\(
-When labor is free to move between the enclosed and unenclosed areas, as will be the case under decentralized processes and in the second-best planning benchmark the parameter will instead be:
-\)</span><span class="math notranslate nohighlight">\(
+\]</div>
+<p>When labor is free to move between the enclosed and unenclosed areas, as will be the case under decentralized processes and in the second-best planning benchmark the parameter will instead be:</p>
+<div class="math notranslate nohighlight">
+\[
 \Lambda_\mu=\left(\frac{ \alpha\theta }{1-\mu(1-\alpha)}\right)^\frac{1}{1-\alpha}
-\)</span><span class="math notranslate nohighlight">\(
-In the case of unregulated open-access we have \)</span>\mu=0<span class="math notranslate nohighlight">\( and we find \)</span>\Lambda_0=(\alpha \theta)^\frac{1}{1-\alpha}<span class="math notranslate nohighlight">\( while when access to the unenclosed areas is perfectly regulated (which is also the labor allocation chosen by a first-best social planner) we use \)</span>\Lambda_0=\theta^\frac{1}{1-\alpha}<span class="math notranslate nohighlight">\(.  The diagram below shows labor intensity \)</span>l_e(t_e)<span class="math notranslate nohighlight">\( as chosen by the social planner (or \)</span>\mu=1<span class="math notranslate nohighlight">\(), the private economy when \)</span>\mu=0<span class="math notranslate nohighlight">\( and in an economy with a partially regulated commons (\)</span>\mu=0.5$)</p>
-<p>![le(te) plot](H:\My Drive\code\GitHub\enclosure\notes\enclosure_book\notebooks\Figures\le_mu.png)</p>
-<p>Returning to the planner’s objective.  Let’s now define
-$<span class="math notranslate nohighlight">\(
+\]</div>
+<p>In the case of unregulated open-access we have <span class="math notranslate nohighlight">\(\mu=0\)</span> and we find <span class="math notranslate nohighlight">\(\Lambda_0=(\alpha \theta)^\frac{1}{1-\alpha}\)</span> while when access to the unenclosed areas is perfectly regulated (which is also the labor allocation chosen by a first-best social planner) we use <span class="math notranslate nohighlight">\(\Lambda_0=\theta^\frac{1}{1-\alpha}\)</span>.  The diagram below shows labor intensity <span class="math notranslate nohighlight">\(l_e(t_e)\)</span> as chosen by the social planner (or <span class="math notranslate nohighlight">\(\mu=1\)</span>), the private economy when <span class="math notranslate nohighlight">\(\mu=0\)</span> and in an economy with a partially regulated commons (<span class="math notranslate nohighlight">\(\mu=0.5\)</span>)</p>
+<p><img alt="le(te) plot" src="notebooks/.%5CFigures%5Cle_mu.png" /></p>
+<p>Returning to the planner’s objective.  Let’s now define</p>
+<div class="math notranslate nohighlight">
+\[
 z(t_e;\mu)=y(t_e,l_e(t_e))
-\)</span><span class="math notranslate nohighlight">\(
-We've substituted \)</span>l_e=l_e(t_e)<span class="math notranslate nohighlight">\( using the labor intensity formula above to express total output solely in terms of the enclosure rate.  When \)</span>\mu=0<span class="math notranslate nohighlight">\( we obtain the planner's first-best objective \)</span>z_1(t_e)<span class="math notranslate nohighlight">\(.  When \)</span>\mu=1<span class="math notranslate nohighlight">\( we can the constrained social planner's objective \)</span>z_0(t_e)<span class="math notranslate nohighlight">\(​.
-\)</span><span class="math notranslate nohighlight">\(
+\]</div>
+<p>We’ve substituted <span class="math notranslate nohighlight">\(l_e=l_e(t_e)\)</span> using the labor intensity formula above to express total output solely in terms of the enclosure rate.  When <span class="math notranslate nohighlight">\(\mu=0\)</span> we obtain the planner’s first-best objective <span class="math notranslate nohighlight">\(z_1(t_e)\)</span>.  When <span class="math notranslate nohighlight">\(\mu=1\)</span> we can the constrained social planner’s objective <span class="math notranslate nohighlight">\(z_0(t_e)\)</span>​.</p>
+<div class="math notranslate nohighlight">
+\[
 z_0(t_e) = \left[\theta F(t_e,l_e(t_e))+F(1-t_e,1-l_e(t_e))\right ]\cdot \bar l^\alpha
-\)</span><span class="math notranslate nohighlight">\(
-The constrained (second best) planner will enclose whenever 
-\)</span><span class="math notranslate nohighlight">\(
+\]</div>
+<p>The constrained (second best) planner will enclose whenever</p>
+<div class="math notranslate nohighlight">
+\[
 z_0'(t_e) \ge c
-\)</span><span class="math notranslate nohighlight">\(
-where:
-\)</span><span class="math notranslate nohighlight">\(
+\]</div>
+<p>where:</p>
+<div class="math notranslate nohighlight">
+\[
 z_0'(t_e) = \left[(\theta F_T^e-F_T^c)+(\theta F_L^e-F_L^c)\cdot \frac{dl_e}{dt_e} \right ]\cdot \bar l^\alpha
-\)</span>$</p>
+\]</div>
 <p>where</p>
 <div class="math notranslate nohighlight">
 \[
@@ -430,11 +436,12 @@ F_L^e=\frac{\partial F(t_e, l_e)}{\partial l_e}\]</div>
 -F_L^c=\frac{\partial F(1-t_e, 1-l_e)}{\partial (1-l_e)}
 \]</div>
 <p>Further notes  on notation and deriving this expression for the Cobb-Douglas case in the next section.</p>
-<p>Notice that in a decentralized economy, private actors only enclose when
-$<span class="math notranslate nohighlight">\(
+<p>Notice that in a decentralized economy, private actors only enclose when</p>
+<div class="math notranslate nohighlight">
+\[
 \theta F_T^e \cdot \bar l^\alpha \ge c
-\)</span><span class="math notranslate nohighlight">\(
-So we can say that private actors ignore several &quot;external effects.&quot;  The first is that, in this case with zero-compensation and an unregulated commons, they ignore the rents lost by those displaced by their enclosure decision  (\)</span>-F_T^c<span class="math notranslate nohighlight">\() . This is a &quot;negative externality&quot; relative to the planner's second best which means that, all else equal, the private economy encloses too much.  However there is a second effect in that the private actor ignores the positive effect \)</span>(\theta F_L^e-F_L^c)\cdot \frac{dl_e}{dt_e}$ that their enclosure has on reducing mis-allocation, as this benefit flows to others.  All else equal, this effect suggests too little enclosure.</p>
+\]</div>
+<p>So we can say that private actors ignore several “external effects.”  The first is that, in this case with zero-compensation and an unregulated commons, they ignore the rents lost by those displaced by their enclosure decision  (<span class="math notranslate nohighlight">\(-F_T^c\)</span>) . This is a “negative externality” relative to the planner’s second best which means that, all else equal, the private economy encloses too much.  However there is a second effect in that the private actor ignores the positive effect <span class="math notranslate nohighlight">\((\theta F_L^e-F_L^c)\cdot \frac{dl_e}{dt_e}\)</span> that their enclosure has on reducing mis-allocation, as this benefit flows to others.  All else equal, this effect suggests too little enclosure.</p>
 <p>Parameters that describe the institutional and organizational environment may affect the extent to which these externalities are internalized or not because when <span class="math notranslate nohighlight">\(\tau&gt;0\)</span> the encloser must pay compensation to those displaced.  This means they now enclose only when <span class="math notranslate nohighlight">\((\theta F_T^e -\tau F_T^c )\cdot \bar l^\alpha \ge c\)</span>.  It is evident that when <span class="math notranslate nohighlight">\(\tau=1\)</span> the encloser has been forced to internalize the first external effect.  But what of the second external positive spillover <span class="math notranslate nohighlight">\((\theta F_L^e-F_L^c)\cdot \frac{dl_e}{dt_e}\)</span>?   Recall that when access to the unenclosed areas is regulated by parameter <span class="math notranslate nohighlight">\(\mu\)</span> (we can think of it as an access fee, or as the fraction of land possessed that a laborer can hold onto if they leave the unenclosed areas.  Recall how parameter <span class="math notranslate nohighlight">\(\mu\)</span> affects equilibrium in the labor market:</p>
 <div class="math notranslate nohighlight">
 \[
@@ -460,16 +467,15 @@ So we can say that private actors ignore several &quot;external effects.&quot;  
 \frac{d(1-l_e(t_e))}{dt_e}=- \frac{dl_e(t_e)}{dt_e}
 \]</div>
 <p>and obviously <span class="math notranslate nohighlight">\(\frac{d(1-t_e)}{dt_e}=-1\)</span></p>
-<p>So, just to be clear about notation, we got the earlier expression <span class="math notranslate nohighlight">\(z'(t_e)\)</span> from the chain rule:
-$$
-z’(t_e) = \theta \frac{\partial F(t_e,l_e)}{\partial t_e}</p>
-<ul class="simple">
-<li><p>\frac{\partial F(1-t_e, 1-l_e)}{\partial (1-t_e)} \frac{d(1-t_e)}{dt_e}
-+\theta \frac{\partial F(t_e,l_e)}{\partial l_e}\frac{dl_e(t_e)}{dt_e}</p></li>
-<li><p>\frac{\partial F(1-t_e, 1-l_e)}{\partial (1-l_e)}\left (-\frac{dl_e(t_e)}{dt_e} \right )  \
-=(\theta F_T^e - F_T^c) + (\theta F_L^e - F_L^c) \cdot \frac{dl_e(t_e)}{dt_e}
-$$</p></li>
-</ul>
+<p>So, just to be clear about notation, we got the earlier expression <span class="math notranslate nohighlight">\(z'(t_e)\)</span> from the chain rule:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+z'(t_e) = \theta \frac{\partial F(t_e,l_e)}{\partial t_e}
++ \frac{\partial F(1-t_e, 1-l_e)}{\partial (1-t_e)} \frac{d(1-t_e)}{dt_e}
++\theta \frac{\partial F(t_e,l_e)}{\partial l_e}\frac{dl_e(t_e)}{dt_e} 
++ \frac{\partial F(1-t_e, 1-l_e)}{\partial (1-l_e)}\left (-\frac{dl_e(t_e)}{dt_e} \right )  \\
+ =(\theta F_T^e - F_T^c) + (\theta F_L^e - F_L^c) \cdot \frac{dl_e(t_e)}{dt_e}
+\end{split}\]</div>
 <p>We can now find expressions for the components of <span class="math notranslate nohighlight">\(z'(t_e)\)</span>. Note how we substitute in for <span class="math notranslate nohighlight">\(l_e(t_e)\)</span>:</p>
 <div class="math notranslate nohighlight">
 \[
@@ -520,18 +526,20 @@ r(t_e)&gt;c
 <p>All the loci expressions are derived same way (e.g. from <span class="math notranslate nohighlight">\(z'(0)&lt;c\)</span>​)</p>
 <section id="z-t-e-components">
 <h4><span class="math notranslate nohighlight">\(z'(t_e)\)</span>​ Components<a class="headerlink" href="#z-t-e-components" title="Permalink to this heading">#</a></h4>
-<p>Using the Cobb-Douglas we can get closed form solutions:
-$<span class="math notranslate nohighlight">\(
+<p>Using the Cobb-Douglas we can get closed form solutions:</p>
+<div class="math notranslate nohighlight">
+\[
 \theta F_T^e=\theta (1-\alpha)\frac{\Lambda^\alpha}{(1+(\Lambda-1)t_e)^\alpha}
-\)</span>$</p>
+\]</div>
 <div class="math notranslate nohighlight">
 \[
 F_T^c= (1-\alpha)\frac{1}{(1+(\Lambda-1)t_e)^\alpha}
 \]</div>
-<p>which implies
-$<span class="math notranslate nohighlight">\(
+<p>which implies</p>
+<div class="math notranslate nohighlight">
+\[
 (\theta F_T^e-F_T^c)=  (1-\alpha)\frac{(\theta \Lambda-1)}{(1+(\Lambda-1)t_e)^\alpha}
-\)</span>$</p>
+\]</div>
 <p>#TODO: complete other terms and show plot… Note that these are terms for the second-best planner, so we should not read these as guiding efficient choices on the margin.</p>
 </section>
 </section>
@@ -562,8 +570,8 @@ Let’s try to get this to look a bit more like</p>
 \[
 \theta F_T(t_e, l_e) \ge c +F_T(t_c,l_c)-\theta F_L(t_e,l_e)\frac{dl_e}{dt_e}+F_L(t_c,l_c)\frac{dl_e}{dt_e}
 \]</div>
-<section id="id2">
-<h2>Appendix<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h2>
+<section id="earlier-appendix-notes">
+<h2>Earlier Appendix notes<a class="headerlink" href="#earlier-appendix-notes" title="Permalink to this heading">#</a></h2>
 <p>All key equations are stated or derived here.</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
@@ -934,7 +942,7 @@ $<span class="math notranslate nohighlight">\(
 </ul>
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#id1"></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Appendix</a><ul class="nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#earlier-appendix-notes">Earlier Appendix notes</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#socially-optimal">Socially Optimal</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#social-enclosure-decisions">Social Enclosure decisions</a></li>
 </ul>
