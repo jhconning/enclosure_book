@@ -1,5 +1,5 @@
 ---
-title: "Appendix"
+title: "Appendix "
 created: 2022-07-18T14:33:25.135Z
 modified: 2024-02-28T20:05:23.114Z
 ---
@@ -32,30 +32,41 @@ where we have used the fact that for our Cobb-Douglass $F(\bar T,\bar L) =\bar T
 #### Labor intensity in the enclosed sector $l_e(t_e)$
 
 Recall that we found expressions for how labor would be allocated to the enclosed areas, for any given enclosure rate $t_e$.  Broadly we can write:
+
 $$
 l_e(t_e)=\frac{\Lambda_\mu t_e}{1-(\Lambda_\mu-1)t_e}
 $$
+
 When labor is free to move between the enclosed and unenclosed areas, as will be the case under decentralized processes and in the second-best planning benchmark the parameter will instead be:
+
 $$
 \Lambda_\mu=\left(\frac{ \alpha\theta }{1-\mu(1-\alpha)}\right)^\frac{1}{1-\alpha}
 $$
+
 In the case of unregulated open-access we have $\mu=0$ and we find $\Lambda_0=(\alpha \theta)^\frac{1}{1-\alpha}$ while when access to the unenclosed areas is perfectly regulated (which is also the labor allocation chosen by a first-best social planner) we use $\Lambda_0=\theta^\frac{1}{1-\alpha}$.  The diagram below shows labor intensity $l_e(t_e)$ as chosen by the social planner (or $\mu=1$), the private economy when $\mu=0$ and in an economy with a partially regulated commons ($\mu=0.5$)
 
-![le(te) plot](H:\My Drive\code\GitHub\enclosure\notes\enclosure_book\notebooks\Figures\le_mu.png)
+![le(te) plot](.\Figures\le_mu.png)
 
 Returning to the planner's objective.  Let's now define
+
 $$
 z(t_e;\mu)=y(t_e,l_e(t_e))
 $$
+
 We've substituted $l_e=l_e(t_e)$ using the labor intensity formula above to express total output solely in terms of the enclosure rate.  When $\mu=0$ we obtain the planner's first-best objective $z_1(t_e)$.  When $\mu=1$ we can the constrained social planner's objective $z_0(t_e)$​.
+
 $$
 z_0(t_e) = \left[\theta F(t_e,l_e(t_e))+F(1-t_e,1-l_e(t_e))\right ]\cdot \bar l^\alpha
 $$
+
 The constrained (second best) planner will enclose whenever 
+
 $$
 z_0'(t_e) \ge c
 $$
+
 where:
+
 $$
 z_0'(t_e) = \left[(\theta F_T^e-F_T^c)+(\theta F_L^e-F_L^c)\cdot \frac{dl_e}{dt_e} \right ]\cdot \bar l^\alpha
 $$
@@ -85,9 +96,11 @@ $$
 Further notes  on notation and deriving this expression for the Cobb-Douglas case in the next section.
 
 Notice that in a decentralized economy, private actors only enclose when 
+
 $$
 \theta F_T^e \cdot \bar l^\alpha \ge c
 $$
+
 So we can say that private actors ignore several "external effects."  The first is that, in this case with zero-compensation and an unregulated commons, they ignore the rents lost by those displaced by their enclosure decision  ($-F_T^c$) . This is a "negative externality" relative to the planner's second best which means that, all else equal, the private economy encloses too much.  However there is a second effect in that the private actor ignores the positive effect $(\theta F_L^e-F_L^c)\cdot \frac{dl_e}{dt_e}$ that their enclosure has on reducing mis-allocation, as this benefit flows to others.  All else equal, this effect suggests too little enclosure.  
 
 Parameters that describe the institutional and organizational environment may affect the extent to which these externalities are internalized or not because when $\tau>0$ the encloser must pay compensation to those displaced.  This means they now enclose only when $(\theta F_T^e -\tau F_T^c )\cdot \bar l^\alpha \ge c$.  It is evident that when $\tau=1$ the encloser has been forced to internalize the first external effect.  But what of the second external positive spillover $(\theta F_L^e-F_L^c)\cdot \frac{dl_e}{dt_e}$?   Recall that when access to the unenclosed areas is regulated by parameter $\mu$ (we can think of it as an access fee, or as the fraction of land possessed that a laborer can hold onto if they leave the unenclosed areas.  Recall how parameter $\mu$ affects equilibrium in the labor market:
@@ -121,6 +134,7 @@ $$
 and obviously $\frac{d(1-t_e)}{dt_e}=-1$
 
 So, just to be clear about notation, we got the earlier expression $z'(t_e)$ from the chain rule:
+
 $$
 z'(t_e) = \theta \frac{\partial F(t_e,l_e)}{\partial t_e}
 + \frac{\partial F(1-t_e, 1-l_e)}{\partial (1-t_e)} \frac{d(1-t_e)}{dt_e}
@@ -191,6 +205,7 @@ All the loci expressions are derived same way (e.g. from $z'(0)<c$​)
 ##### $z'(t_e)$​ Components
 
 Using the Cobb-Douglas we can get closed form solutions:
+
 $$
 \theta F_T^e=\theta (1-\alpha)\frac{\Lambda^\alpha}{(1+(\Lambda-1)t_e)^\alpha}
 $$
@@ -198,7 +213,9 @@ $$
 $$
 F_T^c= (1-\alpha)\frac{1}{(1+(\Lambda-1)t_e)^\alpha}
 $$
+
 which implies 
+
 $$
 (\theta F_T^e-F_T^c)=  (1-\alpha)\frac{(\theta \Lambda-1)}{(1+(\Lambda-1)t_e)^\alpha}
 $$
@@ -240,7 +257,7 @@ $$
 $$
 
 
-## Appendix
+## Earlier Appendix notes
 
 All key equations are stated or derived here. 
 
