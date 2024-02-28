@@ -1,7 +1,7 @@
 ---
-title: appendix
+title: "Appendix"
 created: 2022-07-18T14:33:25.135Z
-modified: 2022-07-21T17:24:21.190Z
+modified: 2024-02-28T20:05:23.114Z
 ---
 
 # Appendix 
@@ -61,7 +61,28 @@ z_0'(t_e) = \left[(\theta F_T^e-F_T^c)+(\theta F_L^e-F_L^c)\cdot \frac{dl_e}{dt_
 $$
 
 
-where $F_T^e=\frac{\partial F(t_e, l_e)}{\partial t_e}$, $F_L^e=\frac{\partial F(t_e, l_e)}{\partial l_e}$ and $-F_T^c=\frac{\partial F(1-t_e, 1-l_e)}{\partial (1-t_e)}$ and $-F_L^c=\frac{\partial F(1-t_e, 1-l_e)}{\partial (1-l_e)}$ . Further notes  on notation and deriving this expression for the Cobb-Douglas case in the next section.
+where 
+
+$$
+F_T^e=\frac{\partial F(t_e, l_e)}{\partial t_e}
+$$
+
+$$
+F_L^e=\frac{\partial F(t_e, l_e)}{\partial l_e}$$
+
+and 
+
+$$
+-F_T^c=\frac{\partial F(1-t_e, 1-l_e)}{\partial (1-t_e)}
+$$ 
+
+and 
+
+$$
+-F_L^c=\frac{\partial F(1-t_e, 1-l_e)}{\partial (1-l_e)}
+$$
+
+Further notes  on notation and deriving this expression for the Cobb-Douglas case in the next section.
 
 Notice that in a decentralized economy, private actors only enclose when 
 $$
@@ -70,25 +91,33 @@ $$
 So we can say that private actors ignore several "external effects."  The first is that, in this case with zero-compensation and an unregulated commons, they ignore the rents lost by those displaced by their enclosure decision  ($-F_T^c$) . This is a "negative externality" relative to the planner's second best which means that, all else equal, the private economy encloses too much.  However there is a second effect in that the private actor ignores the positive effect $(\theta F_L^e-F_L^c)\cdot \frac{dl_e}{dt_e}$ that their enclosure has on reducing mis-allocation, as this benefit flows to others.  All else equal, this effect suggests too little enclosure.  
 
 Parameters that describe the institutional and organizational environment may affect the extent to which these externalities are internalized or not because when $\tau>0$ the encloser must pay compensation to those displaced.  This means they now enclose only when $(\theta F_T^e -\tau F_T^c )\cdot \bar l^\alpha \ge c$.  It is evident that when $\tau=1$ the encloser has been forced to internalize the first external effect.  But what of the second external positive spillover $(\theta F_L^e-F_L^c)\cdot \frac{dl_e}{dt_e}$?   Recall that when access to the unenclosed areas is regulated by parameter $\mu$ (we can think of it as an access fee, or as the fraction of land possessed that a laborer can hold onto if they leave the unenclosed areas.  Recall how parameter $\mu$ affects equilibrium in the labor market:
+
 $$
 \theta F_L^e-F_L^c=(1-\mu)F_T^c\frac{T_c}{L_c}
 $$
+
 It should be clear that when $\mu=1$ the second external effect $(\theta F_L^e-F_L^c)\cdot \frac{dl_e}{dt_e}$ goes to zero.  As discussed in the main text, however, both $\mu$ and $\tau$ need to be adjusted to arrive at a social optimum when $\tau=\mu=1$.  Adjusting one variable and not the other can make things worse.
 
 #### Derivations
 
 It's useful to note that  
+
 $$
 1-l_e(t_e)= \frac{1-t_e}{1+(\Lambda-1)t_e}
 $$
+
 Note also that after some simplification:
+
 $$
 \frac{dl_e(t_e)}{dt_e}= \frac{\Lambda}{(1+(\Lambda-1)t_e)^2}
 $$
+
 and
+
 $$
 \frac{d(1-l_e(t_e))}{dt_e}=- \frac{dl_e(t_e)}{dt_e}
 $$
+
 and obviously $\frac{d(1-t_e)}{dt_e}=-1$
 
 So, just to be clear about notation, we got the earlier expression $z'(t_e)$ from the chain rule:
@@ -102,6 +131,7 @@ $$
 
 
 We can now find expressions for the components of $z'(t_e)$. Note how we substitute in for $l_e(t_e)$:
+
 $$
 \theta F_T^e=\theta \frac{\partial F(t_e,l_e)}{\partial T}
 =\theta (1-\alpha) t_e^{-\alpha} 
@@ -110,7 +140,9 @@ $$
 \right)^\alpha
 =\theta (1-\alpha) \left (  \frac{\Lambda}{1+(\Lambda-1)t_e} \right )^\alpha
 $$
+
 And by similar derivation (substituting in from above for $(1-l_e(t_e))$:
+
 $$
 -F_T^c= \frac{\partial F(1-t_e,1-l_e)}{\partial T}
 =- (1-\alpha) (1-t_e)^{-\alpha}
