@@ -27,12 +27,19 @@ jobs:
     - name: Build the book
       run: |
         jupyter-book build .
+
+        
+    # Install LaTeX dependencies for PDF build
+    - name: Install LaTeX
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y texlive-xetex texlive-fonts-recommended texlive-plain-generic
+
     # Build the documentation
     - name: Build PDF
       run: |
-      jupyter-book build . --builder pdflatex
-      pdoc --math ./notebooks/enclose.py -o ./docs
-      
+        jupyter-book build . --builder pdflatex
+        pdoc --math ./notebooks/enclose.py -o ./docs
 
     # Push the book's HTML to github-pages
     - name: GitHub Pages action

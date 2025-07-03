@@ -1,7 +1,6 @@
 ---
 title: content
 created: 2021-08-31T03:26:56.580Z
-modified: 2022-06-21T18:32:52.330Z
 ---
 
 # The Enclosure Projects
