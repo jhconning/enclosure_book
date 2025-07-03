@@ -33,7 +33,7 @@ jobs:
     - name: Install LaTeX
       run: |
         sudo apt-get update
-        sudo apt-get install -y texlive-xetex texlive-fonts-recommended texlive-plain-generic
+        sudo apt-get install -y texlive-xetex texlive-fonts-recommended texlive-plain-generic latexmk
 
     # Build the documentation
     - name: Build PDF
