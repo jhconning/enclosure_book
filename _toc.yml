@@ -10,10 +10,7 @@ parts:
     title: Code API
 - caption: Extensions and Ideas
   chapters:
-  - file: notes/partial_exclusive.md
-  - file: notebooks/labor_plot
   - file: notebooks/enclosure_manuf.ipynb
-  # - file: notes/contest_function.md
 - caption: "TEMP — RESTUD revision (remove before final)"
   chapters:
   - file: notebooks/trajectories_temp.md

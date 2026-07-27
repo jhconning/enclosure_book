@@ -45,7 +45,7 @@ $$
 
 In the case of unregulated open-access we have $\mu=0$ and we find $\Lambda_0=(\alpha \theta)^\frac{1}{1-\alpha}$ while when access to the unenclosed areas is perfectly regulated (which is also the labor allocation chosen by a first-best social planner) we use $\Lambda_0=\theta^\frac{1}{1-\alpha}$.  The diagram below shows labor intensity $l_e(t_e)$ as chosen by the social planner (or $\mu=1$), the private economy when $\mu=0$ and in an economy with a partially regulated commons ($\mu=0.5$)
 
-![le(te) plot](.\Figures\le_mu.png)
+![le(te) plot](Figures/le_mu.png)
 
 Returning to the planner's objective.  Let's now define
 
