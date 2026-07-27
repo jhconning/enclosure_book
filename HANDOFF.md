@@ -61,6 +61,18 @@ obliged to commit them.
 Because `Y:` is Google-Drive-synced, also confirm Drive has finished syncing before working —
 otherwise you may see a half-synced tree that looks like phantom changes.
 
+**`enclosure_book` also has three intentionally-uncommitted modified files** — don't be
+alarmed by them:
+
+| File | Why it's uncommitted |
+|---|---|
+| `.gitignore` | An edit that predates this session (adds `notes/customary/*`); left untouched as unrelated. |
+| `notes/derive te.md` | Has real uncommitted derivation work. It was on the cleanup list until `git status` showed it modified rather than deleted — excluded rather than silently discard your edits. |
+| `notes/tomake_ghpages.md` | Same story; it also happens to contain the source of the `pdoc` command now used in `book.yml`. |
+
+Decide what to do with the two `notes/` files when convenient. `paper/` is also deliberately
+untracked (see §5).
+
 ### Environment
 
 Everything runs in the **`ecopy`** conda env (miniforge). On this office machine the
