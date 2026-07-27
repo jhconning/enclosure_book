@@ -140,10 +140,33 @@ The current site has two nav items (Home, Model Construction) pointing at one 1M
 | **The Model** | The derivation narrative: first-best → constrained → Nash → global games → monopoly → μ → τ. Prose + LaTeX, with folded code cells producing figures inline | Matt's 81 markdown cells, reorganized into sections |
 | **Reproducing the Paper's Figures** | Each of the 8 figures, each with a 2–3 line call and the paper's figure number/caption | new, thin — the point is that it's *thin* |
 | **Mathematical Appendix** | Full derivations, proofs, computational verification | `enclosure_book/docs/online_appendix.md` (1219 lines, already written, satisfies Matt's open TODO "Add online math appendix") |
-| **Explore the Model** | ipywidgets sliders over θ, α, c, l̄, μ, τ | `enclose.py`'s `interact`-ready signatures |
+| **Explore the Model** | ipywidgets sliders over θ, α, c, l̄, μ, τ, running live in the browser | `enclose.py`'s `interact`-ready signatures + JupyterLite (see below) |
 | **Code API** | Auto-generated module docs | pdoc, as today |
 
 MyST supports `hide-input` cell tags (already on Matt's TODO), so code folds away and the derivation reads as prose.
+
+### Decision: interactivity via JupyterLite / Pyodide (Python in the browser)
+
+**Decided 2026-07-27.** Sliders cannot run on a static site without either a remote kernel
+(Thebe/Binder) or in-browser Python. We're going with **JupyterLite/Pyodide**: no server, no
+Binder cold-start, works on plain GitHub Pages, and the model is closed-form numpy so it
+evaluates instantly. numpy, matplotlib and sympy are all in the Pyodide distribution, so the
+symbolic layer can run live too.
+
+**This makes import hygiene load-bearing in Phase 1, not cosmetic.** `enclose.py` currently
+imports `ipywidgets` and `IPython.display` at module level, and none of them are used by live
+code — under Pyodide that bloats first load or breaks it. The rule for the new package: the
+computation layer imports **numpy only**; matplotlib belongs to the plotting layer;
+`ipywidgets` is imported by notebooks, never by the model.
+
+**Rejected alternative:** reimplementing the loci in JavaScript for instant sliders. Faster to
+load, but it creates a *second implementation of the same math* — exactly the fragmentation
+this whole reorganization exists to remove.
+
+**To verify at Phase 4 (not blocking earlier work):** first-load size (Pyodide + numpy +
+matplotlib, cached afterward); the `ipywidgets`↔JupyterLite version pairing, historically
+finicky — pin and smoke-test early; and whether the manufacturing extension's
+`scipy.optimize.fsolve` justifies pulling scipy into the browser or should ship pre-rendered.
 
 ---
 

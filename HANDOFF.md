@@ -229,6 +229,16 @@ Plus this handoff, the Phase 0 work, and `REORGANIZATION_PROPOSAL.md`.
 5. Then either start Phase 1 of [`REORGANIZATION_PROPOSAL.md`](REORGANIZATION_PROPOSAL.md), or
    switch to the RESTUD revision itself via `paper/final_revisions.md`.
 
+### Decision recorded since this handoff was written
+
+**Interactivity will use JupyterLite / Pyodide** (Python in the browser) rather than
+Thebe/Binder. Rationale and caveats are in `REORGANIZATION_PROPOSAL.md` §4.
+
+The one thing this changes *upstream*: in Phase 1, the model layer must import **numpy only**.
+`enclose.py` today imports `ipywidgets` and `IPython.display` at module level and uses neither
+— dropping them was on the cleanup list as tidiness, but under Pyodide it becomes a
+requirement.
+
 On the sequencing question the proposal raises (merge first vs revise first): my
 recommendation is unchanged — do the merge's Phase 1 before finishing the revision,
 specifically because `trajectories.png` is currently a third independent reimplementation of
