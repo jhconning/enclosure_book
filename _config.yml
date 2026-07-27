@@ -9,7 +9,8 @@ logo: logo2.png
 # See https://jupyterbook.org/content/execute.html
 execute:
   execute_notebooks: cache
-  exclude_patterns: []  
+  exclude_patterns: []
+  timeout: 300
   
 only_build_toc_files: true
 
@@ -45,3 +46,5 @@ only_build_toc_files: true
 sphinx:
   config:
     html_extra_path: ['docs']
+  extra_extensions:
+  - 'sphinx.ext.autodoc'
