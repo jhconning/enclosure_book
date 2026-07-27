@@ -7,14 +7,15 @@ modified: 2022-07-13T22:04:22.028Z
 
 ## Code API
 
-Documentation for the enclose.py module is generated with https://pdoc.dev/ at the command line:
+Code and documentation for the enclose.py module is available at [enclose.html](https://jhconning.github.io/enclosure_book/enclose.html).
 
-`pdoc --html --force --output-dir docs -c latex_math=True enclose.py`
 
-the resulting HTML page is embedded below. More room if you hide the left panel by clicking on the ☰:
+:::{note}
+Docstring documentation for the enclose.py module is generated with https://pdoc.dev/ at the command line:
 
-````{div} full-width
-```{raw} html
-:file: ../notebooks/docs/enclose.html
-```
-````
+`pdoc --math -o ../docs enclose.py`
+
+the resulting HTML page is at the link above.
+
+:::
+

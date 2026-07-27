@@ -1,9 +1,9 @@
-jupyter-book
+jupyter-book==1.0.4.post1
 matplotlib
 numpy
 ipywidgets
 scipy
-pdoc3
+pdoc
 
 
 
