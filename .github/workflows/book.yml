@@ -26,9 +26,15 @@ jobs:
     # Regenerate the Code API docs before the HTML build, so the freshly
     # generated docs/enclose.html is what the book's html_extra_path picks
     # up (the book build copies docs/ as it runs, not afterward).
+    # pdoc also writes an index.html (a redirect to enclose.html, since
+    # there's only one module) and a search.js alongside it; since
+    # html_extra_path copies the whole docs/ directory to the site root,
+    # that index.html clobbers the real book homepage built from
+    # content.md. Delete both - neither is referenced by enclose.html.
     - name: Generate Code API docs
       run: |
         pdoc --math ./notebooks/enclose.py -o ./docs
+        rm -f docs/index.html docs/search.js
 
     # Build the book
     - name: Build the book
