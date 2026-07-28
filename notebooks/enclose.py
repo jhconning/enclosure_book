@@ -28,6 +28,13 @@ DEFAULT_LBAR = 100
 Tbar = DEFAULT_TBAR  # Alias for backward compatibility
 Lbar = DEFAULT_LBAR  # Alias for backward compatibility
 
+# Density convention: every function below takes `lbar`, population density
+# $\bar l = \bar L / \bar T$, as in the paper. Factor prices scale as
+# $r \propto \bar l^{\alpha}$ and $w \propto \bar l^{\alpha-1}$.
+# (Earlier versions parameterized the MPL/APL family by the reciprocal
+# $\bar t = \bar T / \bar L$, which silently inverted one of the two curves in
+# `plotreq` whenever the density was not 1.)
+
 
 def f(T, L, a=0.5, th=1.0):
     r'''Production technology 
@@ -36,34 +43,36 @@ def f(T, L, a=0.5, th=1.0):
     return th * T**(1-a) * L**a
 
 
-def mple(te, le, a=0.5, th=1.0, tlbar=DEFAULT_TBAR/DEFAULT_LBAR):
+def mple(te, le, a=0.5, th=1.0, lbar=DEFAULT_LBAR/DEFAULT_TBAR):
     r'''Marginal product of Labor on enclosed land can be written
-       $$MPL(t_e, l_e) = \alpha \cdot \frac{f(t_e, l_e)}{l_e} \bar l^\alpha$$ 
+       $$MPL(t_e, l_e) = \alpha \cdot \frac{f(t_e, l_e)}{l_e} \bar l^{\alpha-1}$$
        Since for a Cobb Douglas, $$MPL = \alpha \cdot APL$$.'''
-    return a * f(te, le, a, th) / le * tlbar**(1-a)
+    return a * f(te, le, a, th) / le * lbar**(a-1)
 
 
-def aple(te, le, a=0.5, th=1.0, tlbar=DEFAULT_TBAR/DEFAULT_LBAR):
-    r'''Average product of Labor 
-    $$APL(t_e, l_e) = \frac{f(T_e, L_e)}{L_e} =  \frac{f(t_e, l_e)}{l_e} \cdot \bar t^{1-\alpha}$$ 
+def aple(te, le, a=0.5, th=1.0, lbar=DEFAULT_LBAR/DEFAULT_TBAR):
+    r'''Average product of Labor
+    $$APL(t_e, l_e) = \frac{f(T_e, L_e)}{L_e} =  \frac{f(t_e, l_e)}{l_e} \cdot \bar l^{\alpha-1}$$
     '''
-    return f(te, le, a, th) / le * tlbar**(1-a)
+    return f(te, le, a, th) / le * lbar**(a-1)
 
 
-def mpt(te, le, a=0.5, th=1.0, tlbar=DEFAULT_TBAR/DEFAULT_LBAR):
-    '''Marginal product of Land on enclosed land'''
-    return (1-a) * f(te, le, a, th) / te * tlbar**(-a)
+def mpt(te, le, a=0.5, th=1.0, lbar=DEFAULT_LBAR/DEFAULT_TBAR):
+    r'''Marginal product of Land on enclosed land
+       $$MPT(t_e, l_e) = (1-\alpha) \cdot \frac{f(t_e, l_e)}{t_e} \bar l^\alpha$$
+       Evaluated at the equilibrium $l_e(t_e)$ this is the rental `req`.'''
+    return (1-a) * f(te, le, a, th) / te * lbar**a
 
 
-def mplu(te, le, a=0.5, th=1.0, tlbar=DEFAULT_TBAR/DEFAULT_LBAR):
+def mplu(te, le, a=0.5, th=1.0, lbar=DEFAULT_LBAR/DEFAULT_TBAR):
     '''Marginal product of Labor on unenclosed land
        same tech but useful to have other name'''
-    return mple(te, le, a, th, tlbar)
+    return mple(te, le, a, th, lbar)
 
 
-def aplu(te, le, a=0.5, th=1.0, tlbar=DEFAULT_TBAR/DEFAULT_LBAR):
+def aplu(te, le, a=0.5, th=1.0, lbar=DEFAULT_LBAR/DEFAULT_TBAR):
     '''Average product of Labor on unenclosed land'''
-    return aple(te, le, a, th, tlbar)
+    return aple(te, le, a, th, lbar)
 
 
 def Lambda(th, alp, mu):
@@ -75,20 +84,23 @@ def Lambda(th, alp, mu):
     return ((alp * th) / (1 - mu + alp * mu))**(1 / (1 - alp))
 
 
-def req(te, th=1.0, alp=0.5, ltbar=1.0, mu=0.0):
+def req(te, th=1.0, alp=0.5, lbar=1.0, mu=0.0):
     r'''Decentralized Equilibrium rental given t_e
-       $$r(t_e) =  \theta f_T(t_e, l_e(t_e)) \cdot \bar l^\alpha$$ 
-       $$r(t_e) =  \frac{(1-\alpha) \theta  \Lambda_{\mu}^\alpha}{(1+(\Lambda_{\mu}-1)t_e)^\alpha}  \cdot \bar l^\alpha$$ 
-       
+       $$r(t_e) =  \theta f_T(t_e, l_e(t_e)) \cdot \bar l^\alpha$$
+       $$r(t_e) =  \frac{(1-\alpha) \theta  \Lambda_{\mu}^\alpha}{(1+(\Lambda_{\mu}-1)t_e)^\alpha}  \cdot \bar l^\alpha$$
+
     '''
     lam = Lambda(th, alp, mu)
-    return (1-alp) * th * lam**alp * (1+(lam-1)*te)**(-alp) * (ltbar)**(alp)
+    return (1-alp) * th * lam**alp * (1+(lam-1)*te)**(-alp) * (lbar)**(alp)
 
 
-def weq(te, th=1.0, alp=0.5, tlbar=1.0, mu=0.0):
-    '''Decentralized Equilibrium wage'''
+def weq(te, th=1.0, alp=0.5, lbar=1.0, mu=0.0):
+    r'''Decentralized Equilibrium wage
+       $$w(t_e) = \left(1+(\Lambda_{\mu}-1)t_e\right)^{1-\alpha} \cdot \bar l^{\alpha-1}$$
+       At $\mu=0$ this equals $MP_L^e$ evaluated at $l_e(t_e)$; for $\mu>0$ it is
+       that marginal product scaled by $(1-\mu+\alpha\mu)$.'''
     lam = Lambda(th, alp, mu)
-    return (1+(lam-1)*te)**(1-alp) * (tlbar)**(1-alp)
+    return (1+(lam-1)*te)**(1-alp) * (lbar)**(alp-1)
 
 
 def le(te, th, alp, mu):
@@ -116,7 +128,7 @@ def totalq(te, th, alp, lbar, mu):
     '''total output in the economy given te and mu.
        Note costs of enclosure are not subtracted.'''
     leq = le(te, th, alp, mu)
-    return (th * f(te, leq, alp, th) + f(1-te, 1-leq, alp, 1)) * lbar**alp
+    return (th * f(te, leq, alp, 1.0) + f(1-te, 1-leq, alp, 1.0)) * lbar**alp
 
 
 def z(te, th, alp, lbar):
@@ -323,23 +335,22 @@ def plotz(th=1.0, alp=0.5, c=1.0, lbar=DEFAULT_LBAR, ax=None):
         plt.show()
 
 
-def plotreq(th=1.0, alp=0.5, tlbar=1.0, c=0.0, wplot=True, ax=None):
+def plotreq(th=1.0, alp=0.5, lbar=1.0, c=0.0, wplot=True, ax=None):
     '''plot rental rate as function of te
-       optionally also plot wages '''
+       optionally also plot wages
+       lbar is population density L/T, passed by keyword to both curves'''
     if ax is None:
         fig, ax = plt.subplots(figsize=(5,5))
     tte = np.linspace(0,1,50)
-    # r0 = req(0, th, alp, tlbar) # Unused
-    # r1 = req(1, th, alp, tlbar) # Unused
     ax.set_xlim(0,1)
-    
-    ax.plot(tte, req(tte, th, alp, tlbar), label=r'$r$')
+
+    ax.plot(tte, req(tte, th, alp, lbar=lbar), label=r'$r$')
     ax.set_xlabel(r'$t_e$', fontsize=15)
-    
+
     ax.grid()
     ax.axhline(y=c, linestyle='--', label=r'$c$')
     if wplot:
-        ax.plot(tte, weq(tte, th, alp, tlbar), label=r'$w$')
+        ax.plot(tte, weq(tte, th, alp, lbar=lbar), label=r'$w$')
         
     # lam = (th*alp)**(1/(1-alp)) # Unused
     ax.legend()
@@ -348,19 +359,19 @@ def plotreq(th=1.0, alp=0.5, tlbar=1.0, c=0.0, wplot=True, ax=None):
         plt.show()
 
 
-def plotmpts2(te=0.5, alp=0.5, th=1.0, tlbar=DEFAULT_TBAR/DEFAULT_LBAR, mu=0.0):
+def plotmpts2(te=0.5, alp=0.5, th=1.0, lbar=DEFAULT_LBAR/DEFAULT_TBAR, mu=0.0):
     '''Plot partial eqn labor demand graph 
        TODO: not yet working for mu different from 0'''
     # noapl = False # Unused
     ll = np.linspace(0.0001, 0.9999, 400)
     leop = leo(te, th, alp)         #optimal 
     leam = le(te, th, alp, mu)      #private
-    we = weq(te, th, alp, tlbar)
-    wo = mple(te, leop, alp, th, tlbar)
-    wc = mplu(1-te, 1-leam, alp, 1, tlbar)
-    mpe = mple(te, ll, alp, th, tlbar)
-    apu = aplu(1-te, 1-ll, alp, 1, tlbar)
-    mpu = mplu(1-te, 1-ll, alp, 1, tlbar)
+    we = weq(te, th, alp, lbar)
+    wo = mple(te, leop, alp, th, lbar)
+    wc = mplu(1-te, 1-leam, alp, 1, lbar)
+    mpe = mple(te, ll, alp, th, lbar)
+    apu = aplu(1-te, 1-ll, alp, 1, lbar)
+    mpu = mplu(1-te, 1-ll, alp, 1, lbar)
 
     fig, ax = plt.subplots(figsize=(8,6))
     ax.set_title(f'($t_e = {te:1.1f}$  and $\\theta = {th:1.1f}$)') 
@@ -379,13 +390,13 @@ def plotmpts2(te=0.5, alp=0.5, th=1.0, tlbar=DEFAULT_TBAR/DEFAULT_LBAR, mu=0.0):
     ax.axhline(wc, linestyle=':')
     ax.set_ylim(0,1.5)
     ax.set_xlim(0,1)
-    ax.annotate(r'$MP_L^c$',xy=(0.85, mplu(1-te, 0.15, alp, 1, tlbar)), 
+    ax.annotate(r'$MP_L^c$',xy=(0.85, mplu(1-te, 0.15, alp, 1, lbar)), 
                 textcoords="offset points", 
                  xytext=(-30,20), fontsize=14)
-    ax.annotate(r'$AP_L^c$',xy=(0.65, aplu(1-te, 0.35, alp, 1, tlbar)), 
+    ax.annotate(r'$AP_L^c$',xy=(0.65, aplu(1-te, 0.35, alp, 1, lbar)), 
                 textcoords="offset points", 
                  xytext=(-24,15), fontsize=14)
-    ax.annotate(r'$MP_L^e$',xy=(0.8,  mple(te, 0.8, alp, th, tlbar)), 
+    ax.annotate(r'$MP_L^e$',xy=(0.8,  mple(te, 0.8, alp, th, lbar)), 
                 textcoords="offset points", 
                  xytext=(20,-20), fontsize=14)
 
@@ -411,18 +422,18 @@ def plotmpts2(te=0.5, alp=0.5, th=1.0, tlbar=DEFAULT_TBAR/DEFAULT_LBAR, mu=0.0):
     return fig, ax
 
 
-def plotmpts(te=0.5, alp=0.5, th=1.0, tlbar=DEFAULT_TBAR/DEFAULT_LBAR, mu=0.0):
+def plotmpts(te=0.5, alp=0.5, th=1.0, lbar=DEFAULT_LBAR/DEFAULT_TBAR, mu=0.0):
     '''Plot partial eqn labor demand graph 
        TODO: not yet working for mu different from 0'''
     ll = np.linspace(0.0001, 0.9999, 400)
     leop = leo(te, th, alp)         #optimal 
     leam = le(te, th, alp, mu)      #private
-    we = weq(te, th, alp, tlbar)
-    wo = mple(te, leop, alp, th, tlbar)
-    wc = mplu(1-te, 1-leam, alp, 1, tlbar)
-    mpe = mple(te, ll, alp, th, tlbar)
-    apu = aplu(1-te, 1-ll, alp, 1, tlbar)
-    mpu = mplu(1-te, 1-ll, alp, 1, tlbar)
+    we = weq(te, th, alp, lbar)
+    wo = mple(te, leop, alp, th, lbar)
+    wc = mplu(1-te, 1-leam, alp, 1, lbar)
+    mpe = mple(te, ll, alp, th, lbar)
+    apu = aplu(1-te, 1-ll, alp, 1, lbar)
+    mpu = mplu(1-te, 1-ll, alp, 1, lbar)
 
     fig, ax = plt.subplots(figsize=(8,6))
     ax.spines['top'].set_visible(False)
@@ -441,13 +452,13 @@ def plotmpts(te=0.5, alp=0.5, th=1.0, tlbar=DEFAULT_TBAR/DEFAULT_LBAR, mu=0.0):
     ax.axhline(wc, linestyle=':')
     ax.set_ylim(0,1.5)
     ax.set_xlim(0,1)
-    ax.annotate(r'$MP_L^c$',xy=(0.85, mplu(1-te, 0.15, alp, 1, tlbar)), 
+    ax.annotate(r'$MP_L^c$',xy=(0.85, mplu(1-te, 0.15, alp, 1, lbar)), 
                 textcoords="offset points", 
                  xytext=(-30,20), fontsize=14)
-    ax.annotate(r'$AP_L^c$',xy=(0.65, aplu(1-te, 0.35, alp, 1, tlbar)), 
+    ax.annotate(r'$AP_L^c$',xy=(0.65, aplu(1-te, 0.35, alp, 1, lbar)), 
                 textcoords="offset points", 
                  xytext=(-24,15), fontsize=14)
-    ax.annotate(r'$MP_L^e$',xy=(0.8,  mple(te, 0.8, alp, th, tlbar)), 
+    ax.annotate(r'$MP_L^e$',xy=(0.8,  mple(te, 0.8, alp, th, lbar)), 
                 textcoords="offset points", 
                  xytext=(20,-20), fontsize=14)
 
@@ -467,12 +478,12 @@ def plotmpts(te=0.5, alp=0.5, th=1.0, tlbar=DEFAULT_TBAR/DEFAULT_LBAR, mu=0.0):
     return fig, ax
 
 
-def simplempl(te=0.5, alp=0.5, th=1.0, tlbar=DEFAULT_TBAR/DEFAULT_LBAR):
+def simplempl(te=0.5, alp=0.5, th=1.0, lbar=DEFAULT_LBAR/DEFAULT_TBAR):
     ll = np.linspace(0.001, 0.999, 50)
     plt.figure(figsize=(10,6))
-    plt.plot(ll, mple(te, ll, alp, 1, tlbar)) 
-    plt.plot(ll, mplu(te, ll, 0.3, th, tlbar))
-    plt.plot(ll, aple(te, ll, alp, 1, tlbar))
+    plt.plot(ll, mple(te, ll, alp, 1, lbar)) 
+    plt.plot(ll, mplu(te, ll, 0.3, th, lbar))
+    plt.plot(ll, aple(te, ll, alp, 1, lbar))
     plt.xlabel('l - labor')
     plt.title('MPL and APL on enclosed and unenclosed lands')
     plt.ylim(0,2)
@@ -480,13 +491,13 @@ def simplempl(te=0.5, alp=0.5, th=1.0, tlbar=DEFAULT_TBAR/DEFAULT_LBAR):
     plt.show()
 
 
-def simplempl2(te=0.5, alp=0.5, th=1.0, tlbar=DEFAULT_TBAR/DEFAULT_LBAR):
+def simplempl2(te=0.5, alp=0.5, th=1.0, lbar=DEFAULT_LBAR/DEFAULT_TBAR):
     ll = np.linspace(0.001, 0.999, 50)
     lnl = np.log(ll)
     plt.figure(figsize=(10,6))
-    plt.plot(lnl, np.log(mple(te, ll, alp, 1, tlbar))) 
-    plt.plot(lnl, mplu(te, ll, 0.3, th, tlbar))
-    plt.plot(lnl, aple(te, ll, alp, 1, tlbar))
+    plt.plot(lnl, np.log(mple(te, ll, alp, 1, lbar))) 
+    plt.plot(lnl, mplu(te, ll, 0.3, th, lbar))
+    plt.plot(lnl, aple(te, ll, alp, 1, lbar))
     plt.xlabel('l - labor')
     plt.title('MPL and APL on enclosed and unenclosed lands')
     plt.show()
@@ -514,13 +525,13 @@ def plotzprime(th, alp, c, lbar):
 ## Log linear MVPL plts
 
 
-def plotdmg(te=0.5, alp=0.5, th=1.0, tlbar=DEFAULT_TBAR/DEFAULT_LBAR):
+def plotdmg(te=0.5, alp=0.5, th=1.0, lbar=DEFAULT_LBAR/DEFAULT_TBAR):
     '''like plotmpts but in logs to linearize'''
     ll = np.linspace(0.1, 99.9, 50)
     lnl = np.log(ll)
     plt.figure(figsize=(10,6))
-    plt.plot(lnl, np.log(mple(te, ll, alp, th, tlbar))) 
-    plt.plot(ll, aplu(te, ll, alp, 1, tlbar))
+    plt.plot(lnl, np.log(mple(te, ll, alp, th, lbar))) 
+    plt.plot(ll, aplu(te, ll, alp, 1, lbar))
     plt.xlabel('l - labor')
     plt.title('MPL and APL on enclosed and unenclosed lands')
     plt.show()
