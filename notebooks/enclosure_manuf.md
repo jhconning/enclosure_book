@@ -8,6 +8,29 @@ jupyter: {jupytext: {formats: 'ipynb,md', text_representation: {extension: .md, 
 
 # Manufactures, Structural Transformation
 
+:::{admonition} Superseded — kept as the historical source
+:class: warning
+
+This draft is where the three-sector extension was worked out, and it is retained for
+provenance. **It is no longer the reference.** As of 2026-07-29 the material lives in:
+
+| What | Where |
+|---|---|
+| Derivations, eqs (35)–(43) | `docs/online_appendix.md` §6.4 (mirrored at `content/04-derivations.md` on the site) |
+| Exposition and figures | `open-enclose.github.io/content/03-manufacturing.md` |
+| Implementation and tests | `open-enclose.github.io/enclose/manufacturing.py` |
+| Interpretation and research agenda | `notes/manuf_paper_ideas.md` |
+
+Three errors originating in this draft have been corrected downstream — a missing
+governance wedge $A_\mu$, an over-reach from the labor margin to the enclosure margin, and
+a backwards statement of the sign of $\partial l_m/\partial t_e$. The corrections have been
+applied to the equations and code cells below, but **prefer the appendix**; see
+`notes/MANUFACTURING_HANDOFF.md` §3.
+
+This file is jupytext-paired with `enclosure_manuf.ipynb`, which has **not** been synced
+since these corrections and therefore still contains the errors.
+:::
+
 ```python tags=["hide_input"]
 %load_ext autoreload
 %autoreload 2
@@ -150,9 +173,14 @@ def Fmapla(lm, te, tb = 1, a=0.5, th=1):
     return C * (1/(1-lm))**(1-a)
 
 def Fmaplae(lm, te, tb = 1, a=0.5, th=1):
-    """social labor demand in agriculture; planner optimum... Lambda_o"""
-    Lambda = th**(1/(1-a))     # only difference here
-    C = tb**(1-a) *  (1 + (Lambda-1)*te)**(1-a) 
+    """social labor demand in agriculture; planner optimum... Lambda_o
+
+    NOTE (corrected 2026-07-28): the leading `a` is NOT optional. Lambda_o is not the
+    only difference from the private case -- the planner also values labor at its
+    marginal rather than average product in the commons, a factor of alpha. Dropping it
+    inflates this curve by 1/alpha. See `enclose/manufacturing.py`."""
+    Lambda = th**(1/(1-a))
+    C = a * tb**(1-a) *  (1 + (Lambda-1)*te)**(1-a)
     return C * (1/(1-lm))**(1-a)
 
  
@@ -180,12 +208,19 @@ def mplm(lm, p, kb, b ):
     C = (p*b) * kb**(1-b)
     return C * (1/lm)**(1-b)
 
-def mpla(lm, te, tb = 1, a=0.5, th=1, mu=1):
+def mpla(lm, te, tb = 1, a=0.5, th=1, mu=0):
     """labor demand in agriculture; 
     mu = 0  full tragedy private
-    mu = 1  planner"""
+    mu = 1  planner
+
+    CORRECTED 2026-07-28: mu enters TWICE, and in opposite directions -- through lam
+    (the slope) and through the wedge A_mu = 1 - mu*(1-a) (the level, i.e. the share of
+    the commons average product that labor takes home). A_0 = 1, so the private case was
+    right and the planner case was overstated by 1/alpha. Default changed from mu=1 to
+    mu=0 to match LM() below, which defaulted the other way."""
     lam = Lambda(th, a, mu)
-    C = tb**(1-a) *  (1 + (lam-1)*te)**(1-a) 
+    A = 1 - mu*(1-a)
+    C = A * tb**(1-a) *  (1 + (lam-1)*te)**(1-a)
     return C * (1/(1-lm))**(1-a)
 
 
@@ -313,21 +348,53 @@ The value marginal product in the 'enclosed' sector can then be written
 
 
 $$
-\bar t^ {1-\alpha} \cdot \left ( \frac{t_e}{l_e(t_e)^*} \right ) ^{1-\alpha}  
-=  \bar t^ {1-\alpha} \cdot (1-t_e+\Lambda_o t_e) ^{1-\alpha} \cdot \left (\frac{1}{1-l_m} \right )^{1-\alpha}  
+\alpha \theta \cdot \bar t^ {1-\alpha} \cdot \left ( \frac{t_e}{l_e(t_e)^*} \right ) ^{1-\alpha}  
+=  \alpha \cdot \bar t^ {1-\alpha} \cdot (1-t_e+\Lambda_o t_e) ^{1-\alpha} \cdot \left (\frac{1}{1-l_m} \right )^{1-\alpha}  
 $$
 
-
+**The leading $\alpha$ matters, and it is easy to lose.** In the private case above the
+same substitution produces $\alpha\theta \Lambda^{-(1-\alpha)}$, which equals *exactly one*
+by the definition of $\Lambda = (\alpha\theta)^{1/(1-\alpha)}$ — so the factor can be
+dropped there and the shorthand $\bar t^{1-\alpha}(t_e/l_e^*)^{1-\alpha}$ is correct.
+Here $\Lambda_o^{1-\alpha} = \theta$, so the same factor is $\alpha$, not one. Carrying the
+private shorthand across to the planner overstates this curve by $1/\alpha$. In general the
+prefactor is $A_\mu = 1-\mu(1-\alpha)$, the share of the commons average product that labor
+takes home; $A_0 = 1$ and $A_1 = \alpha$.
 <!-- #endregion -->
 
 For this to also equal the value marginal product of labor in manufacturing the social planner will make sure that $l_m$ is chosen so that:
 
 $$
 p \cdot \beta \bar k ^{1-\beta} \left (\frac{1}{l_m}   \right )^{1-\beta}  
-= \bar t^ {1-\alpha} \cdot  (1-t_e+\Lambda_o t_e) ^{1-\alpha}  \cdot \left (\frac{1}{1-l_m} \right )^{1-\alpha}
+= \alpha \cdot \bar t^ {1-\alpha} \cdot  (1-t_e+\Lambda_o t_e) ^{1-\alpha}  \cdot \left (\frac{1}{1-l_m} \right )^{1-\alpha}
 $$
 
-This looks similar to the condition that emerges from a private economy, except that the planner equalizes marginal value products in agriculture, whereas the private economy equalizes the value marginal product in the enclosed sector to the value average product in the unenclosed sector. 
+This looks similar to the condition that emerges from a private economy, except that the planner equalizes marginal value products in agriculture, whereas the private economy equalizes the value marginal product in the enclosed sector to the value average product in the unenclosed sector. That difference is precisely the $\alpha$: it is the whole content of the distortion at this margin, so dropping it makes the planner and the open-access economy look identical at $t_e=0$, which is how the error was eventually caught.
+
+Two consequences worth recording. At $t_e=0$ the two curves must stand in the ratio $\alpha$
+exactly. At $t_e=1$ there is no commons left, so $\mu$ cannot matter at all and both sides
+reduce to $\alpha\theta\bar t^{1-\alpha}$ — meaning **full enclosure implements the
+planner's inter-sectoral allocation for any $\theta$.**
+
+This is conditional on $t_e$ and says nothing about whether that $t_e$ is worth reaching.
+The planner's remaining first-order condition, in $t_e$, is the enclosure margin. By the
+envelope theorem the labor terms drop out and only the land-rent differential survives:
+
+$$
+\frac{dY}{dt_e} = (1-\alpha)\,\bar t^{1-\alpha}(\Lambda_o-1)
+\left(\frac{1-l_m(t_e)}{1+(\Lambda_o-1)t_e}\right)^{\alpha}
+$$
+
+which is the benchmark's $z'(t_e)$ with the agricultural labor share $(1-l_m)$ in place of
+the whole labor force. Its sign is the sign of $(\Lambda_o-1)$, hence of $(\theta-1)$ —
+note $\Lambda_o$, **not** $\Lambda_\mu$, so this margin turns at $\theta=1$ and not at
+$\theta_H$. For $\theta\le1$ the planner encloses nothing at any $c>0$, however
+misallocated the decentralized economy's labor is. Full enclosure is first best only for
+$\theta>1$ with $c$ small.
+
+At $\theta=1$ the whole gain from enclosure is the repair of the commons distortion — and
+regulating the commons ($\mu\to1$) achieves the same allocation at $t_e=0$ without paying
+$c\bar T$. **Enclosure is a second-best instrument here, dominated by governance.**
 
 ```python
 
@@ -342,9 +409,14 @@ compactly, labor allocates until
 $$
 \underbrace{p \beta \bar k^{1-\beta}}_{C_m} \cdot l_m^{-(1-\beta)}
 \;=\;
-\underbrace{\bar t^{1-\alpha}\left(1+(\Lambda_\mu-1)t_e\right)^{1-\alpha}}_{C_a}
+\underbrace{A_\mu \cdot \bar t^{1-\alpha}\left(1+(\Lambda_\mu-1)t_e\right)^{1-\alpha}}_{C_a}
 \cdot (1-l_m)^{-(1-\alpha)}
 $$
+
+with $A_\mu = 1-\mu(1-\alpha)$ as above. Note that $\mu$ enters $C_a$ twice and in opposing
+directions: it raises $\Lambda_\mu$ (pulling labor back to agriculture) and lowers $A_\mu$
+(pushing labor to manufacturing). At $t_e=0$ the second acts alone; at $t_e=1$ they cancel
+exactly.
 
 or, rearranged,
 
@@ -380,8 +452,12 @@ numerical solver (they agree to 12 significant figures).
 
 ### 3. Enclosure's effect on structural transformation *reverses* at $\theta_H$
 
-This is the substantive result. $C_a$ carries $\left(1+(\Lambda_\mu-1)t_e\right)^{1-\alpha}$,
-so the sign of $\partial l_m/\partial t_e$ is the sign of $(\Lambda_\mu - 1)$ — and
+This is the substantive result, and it is unaffected by the $A_\mu$ correction above:
+$A_\mu$ contains neither $t_e$ nor $l_m$, so it moves the level of the agricultural curve
+without touching its slope. $C_a$ carries $\left(1+(\Lambda_\mu-1)t_e\right)^{1-\alpha}$,
+so the sign of $\partial l_m/\partial t_e$ is the sign of $(1 - \Lambda_\mu)$ — the
+equilibrium condition inverts it, since its left side rises in $l_m$ and so $l_m$ rises
+exactly when $C_a$ falls — and
 $\Lambda_\mu = 1$ exactly at $\theta_H^\mu = \frac{1}{\alpha}-\mu\frac{1-\alpha}{\alpha}$,
 the same threshold that separates strategic complements from substitutes in the main model.
 
@@ -423,11 +499,14 @@ through, and it is stated here as a lead rather than a result.
 
 - The manufacturing price $p$ is taken as given. Endogenising it is the obvious next step
   and could overturn the partial-equilibrium comparative statics above.
-- The planner/private distinction enters only through $\mu$ in $\Lambda_\mu$; the full
-  welfare comparison with a manufacturing sector has not been done.
+- The planner/private distinction enters through $\mu$ in *both* $\Lambda_\mu$ and $A_\mu$
+  (this note previously said $\Lambda_\mu$ only — that was the error corrected above). The
+  full welfare comparison with a manufacturing sector, netting off the enclosure cost $c$,
+  has still not been done.
 - The two existing drafts of this material (`enclosure_manuf.md`, 334 lines, and
   `Manufactures and Structural Transformation.md`, 216 lines) have diverged and should be
-  reconciled before any of it is written up.
+  reconciled before any of it is written up. The shorter draft has **not** been corrected
+  for $A_\mu$ and should not be used as a source.
 
 ### Implementation
 

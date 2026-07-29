@@ -67,7 +67,9 @@ $$
    $R = (C_m/C_a)^{1/(1-\alpha)}$. Agrees with the numerical solve to 12 significant
    figures — used as a test oracle.
 3. **Enclosure's effect on structural transformation reverses at $\theta_H$.** This is the
-   new one. $\partial l_m/\partial t_e$ has the sign of $(\Lambda_\mu-1)$, and
+   new one. $\partial l_m/\partial t_e$ has the sign of $(1-\Lambda_\mu)$ — note the
+   inversion, the equilibrium condition rises in $l_m$ so $l_m$ rises when $C_a$ falls —
+   and
    $\Lambda_\mu = 1$ exactly at $\theta_H^\mu = \frac{1}{\alpha}-\mu\frac{1-\alpha}{\alpha}$.
    Below it enclosure releases labor to manufacturing; above it labor is pulled back; at it
    enclosure moves no labor at all. The knife-edge is exact.
@@ -82,54 +84,168 @@ low-TFP branch.** So the familiar "enclosure freed labor for industry" account i
 about that branch specifically. Where enclosure delivers the *largest* productivity gain, it
 is *least* likely to release labor.
 
-Sharper still: at $\theta=1$ the planner's $\Lambda_o = 1$, so the planner's $l_m$ is
-**completely unmoved** by enclosure, while the decentralized economy shifts half its
-workforce. The entire reallocation is the commons distortion, not productivity.
+At $\theta=1$ the planner's $\Lambda_o = 1$, so the planner's $l_m$ is **completely
+unmoved** by enclosure, while the decentralized economy shifts half its workforce. The
+reallocation is the commons distortion, not productivity.
+
+But note *where* the planner sits — see §3. It is flat at $l_m = 0.68$, which is where the
+decentralized economy **ends up** under full enclosure, not where it starts. The
+reallocation runs toward the optimum, not away from it. An earlier version of this note
+said the opposite; that was the §3 bug.
+
+This is a claim about the labor margin *conditional on $t_e$*, and nothing more. It does
+**not** say full enclosure is first best — at $\theta \le 1$ the planner would not enclose
+at any positive cost. See §4a.
 
 ---
 
-## 3. The blocking problem — resolve this first
+## 3. The blocking problem — RESOLVED 2026-07-28
 
-**At $t_e=0$ the $\Lambda_\mu$ term in $C_a$ vanishes, so the private and planner
-agricultural labor-demand curves coincide exactly.** (Visible as overlapping curves in the
-left panel of `Figures/manufacturing_equilibrium.png`.)
+**Verdict: the planner's FOCs do *not* agree with `mpl_a(..., mu=1)`. The code overstated
+the planner's agricultural labor demand by exactly $1/\alpha$.** Fixed in
+`open-enclose.github.io`: `enclose/manufacturing.py`, `enclose/figures.py`, both test files,
+`content/03-manufacturing.md`, `Figures/manufacturing_equilibrium.png`.
 
-That looks wrong. With all land in an open-access commons, labor should enter until
-$APL_u = w$; a planner would set $MPL_u = w$; those differ by a factor of $\alpha$. The
-draft's planner expression is the marginal product in the *enclosed* sector
+### The symptom
 
-$$
-\bar t^{1-\alpha}\left(\frac{t_e}{l_e^*(t_e)}\right)^{1-\alpha}
-= \bar t^{1-\alpha}(1-t_e+\Lambda_o t_e)^{1-\alpha}\left(\frac{1}{1-l_m}\right)^{1-\alpha}
-$$
+At $t_e=0$ the $\Lambda_\mu$ term in $C_a$ vanished, so the private and planner
+agricultural labor-demand curves coincided exactly — the overlapping curves in the left
+panel of `Figures/manufacturing_equilibrium.png`. That was wrong: with all land in an
+open-access commons labor enters until $APL_u = w$, whereas a planner sets $MPL_u = w$, and
+the two differ by a factor of $\alpha$.
 
-evaluated where **no enclosed sector exists**. As $t_e\to0$, $t_e/l_e^* \to 1/\Lambda$, so
-the limit is not obviously the right benchmark.
+### The cause
 
-**Why this blocks everything downstream:** every welfare comparison in §4 is against the
-$\mu=1$ curve. If that curve is not the planner's allocation at low $t_e$, the comparisons
-are wrong exactly where the interesting example lives.
-
-First task: derive the planner's three-sector first-order conditions directly from the
-objective in `enclosure_manuf.md` §"Socially optimal enclosure with manufacturing" —
+The draft writes the agricultural return as
+$\bar t^{1-\alpha}\left(t_e/l_e^*(t_e)\right)^{1-\alpha}$. Substituting $l_e^*$ leaves a
+prefactor $\alpha\theta\Lambda_\mu^{-(1-\alpha)}$, which equals **exactly 1 at $\mu=0$** —
+by construction of $\Lambda$ — and so looks droppable. In general it is
 
 $$
-\max_{t_e,\,l_e,\,l_m}\ \theta F(T_e,L_e) + F(\bar T-T_e,\ \bar L-L_m-L_e)
-+ p\,G(\bar K,L_m) - c\,T_e
+A_\mu = 1 - \mu(1-\alpha), \qquad A_0 = 1,\quad A_1 = \alpha
 $$
 
-— and check whether the resulting $l_m$ agrees with `mpl_a(..., mu=1)`. If it does not,
-`manufacturing.py` needs a separate planner path, and `content/03-manufacturing.md` §4 needs
-correcting.
+$\Lambda_\mu$ carries $\mu$ into the *slope* of the agricultural allocation; $A_\mu$ carries
+it into the *level*. The module kept the first and dropped the second. Every established
+$\mu=0$ result — including the 19.7% → 67.6% headline and the wage fall — is untouched,
+because $A_0 = 1$.
+
+### The correct FOCs
+
+From $\max_{t_e,l_e,l_m}\ \theta F(T_e,L_e) + F(\bar T-T_e,\ \bar L-L_m-L_e) + p\,G(\bar K,L_m) - c\,T_e$:
+
+$$
+\alpha\theta\left(\tfrac{t_e}{l_e}\right)^{1-\alpha}
+= \alpha\left(\tfrac{1-t_e}{1-l_m-l_e}\right)^{1-\alpha}
+\quad\Longrightarrow\quad
+l_e^o = \tfrac{\Lambda_o t_e}{1+(\Lambda_o-1)t_e}(1-l_m)
+$$
+
+— eq. (36) at $\mu=1$, which was already right. Substituting back:
+
+$$
+p\,\beta\bar k^{1-\beta}l_m^{-(1-\beta)}
+= \boxed{\alpha}\ \bar t^{1-\alpha}\left(1+(\Lambda_o-1)t_e\right)^{1-\alpha}(1-l_m)^{-(1-\alpha)}
+$$
+
+### How it was verified
+
+Three independent ways, all agreeing. Sympy gives `[code]/[planner MPL_u] = 1/alpha`
+symbolically. Direct Nelder–Mead maximisation of the objective over $(l_e,l_m)$ matches the
+corrected formula to <1e-5 across six parameter sets and the old code not at all — 0.676 vs
+0.197 at the headline parameters. And solving the decentralized equal-return system from
+primitives, with no $\Lambda$ formula anywhere, matches the corrected formula for
+$\mu \in \{0, 0.5, 1\}$ to 1e-9. The first two are now regression tests; reintroducing the
+bug fails twelve of them.
+
+### Two properties that now pin the level
+
+- **$t_e=0$:** the whole economy is the commons, $\Lambda_\mu$ drops out, and the two curves
+  must stand in the ratio $\alpha$ exactly.
+- **$t_e=1$:** there is no commons, so $\mu$ cannot matter at all —
+  $C_a = \alpha\theta\bar t^{1-\alpha}$ for every $\mu$. Equivalently, **full enclosure
+  implements the planner's inter-sectoral allocation for any $\theta$** (checked at
+  $\theta = 0.8, 1.0, 1.5, 2.5$). The old code made $l_m$ at $t_e=1$ depend on $\mu$ — the
+  same defect from the other end, and a sharper diagnostic than the $t_e=0$ one, since it
+  needs no appeal to what a planner "should" do. **Conditional on $t_e$ only** — see §4a
+  for why this does not make $t_e=1$ optimal.
+
+### What survives, what does not
+
+- **Result (3) survives untouched.** $A_\mu$ contains neither $t_e$ nor $l_m$, so
+  $\partial l_m/\partial t_e$ still takes the sign of $(1-\Lambda_\mu)$ and the knife-edge is
+  still exactly $\theta_H^\mu$. The sign-reversal test now runs across $\mu$, which is what
+  actually pins "level, not slope".
+- **§4a is refuted** — see below.
+
+### Still open
+
+`enclose.symbolic` still has no manufacturing counterpart. The sympy check written for this
+was throwaway; folding it into `symbolic.py` would give the three-sector case the same
+derive-and-verify treatment the benchmark loci get, and is the natural guard against the
+next algebra slip of this kind.
 
 ---
 
-## 4. Questions worth pursuing, once §3 is settled
+## 4. Questions worth pursuing, now that §3 is settled
 
-**a. Is enclosure at $\theta=1$ unambiguously welfare-reducing?** Conjecture: yes. No TFP
-gain, wages fall 1.14 → 0.79, and the inter-sectoral allocation moves *away* from the
-planner's. If it holds, it is a clean statement — enclosure that is privately profitable and
-socially destructive on *every* margin at once, without needing any productivity story.
+**a. Is enclosure at $\theta=1$ unambiguously welfare-reducing? No — the conjecture was
+wrong, and it was wrong because of the §3 bug.** The old reasoning was: no TFP gain, wages
+fall 1.14 → 0.79, and the inter-sectoral allocation moves *away* from the planner's. The
+third leg is false. The allocation moves *toward* the planner's and at $t_e=1$ reaches it
+exactly. With $c=0$ total output rises 13.0% from $t_e=0$ to $t_e=1$, purely from
+reallocation, with no technology change anywhere.
+
+The wage leg also needs restating. At $t_e=0$ labor captures the whole average product of
+the commons; at $t_e=1$ it is paid a marginal product. The fall from 1.14 to 0.79 is a
+change in *which of the two* labor receives — a distributional fact, not a fall in anyone's
+productivity. Output and labor's share move in opposite directions.
+
+**But the answer to (a) as originally posed is still "broadly yes", by a different route —
+and I initially got this wrong in the other direction.** The first correction only concerned
+the labor margin, holding $t_e$ fixed. The planner also *chooses* $t_e$, and that is a
+separate margin with a separate threshold. Adding it back (envelope theorem, so the labor
+terms drop out):
+
+$$
+\frac{dY}{dt_e} = (1-\alpha)\,\bar t^{1-\alpha}(\Lambda_o-1)
+\left(\frac{1-l_m(t_e)}{1+(\Lambda_o-1)t_e}\right)^{\alpha}
+$$
+
+— the benchmark's $z'(t_e)$ with the *agricultural* labor share in place of the whole labor
+force. Manufacturing changes the level, not the sign, and the sign is that of
+$(\Lambda_o - 1)$, i.e. of $(\theta - 1)$. **Note $\Lambda_o$, not $\Lambda_\mu$: this
+margin turns at $\theta=1$, not at $\theta_H$.** Confusing the two is the obvious trap.
+
+So $t_e^o = 0$ for every $c>0$ whenever $\theta \le 1$, however misallocated the
+decentralized economy's labor is at $t_e=0$. **Full enclosure is first best only for
+$\theta>1$ and $c$ small enough.** Verified numerically over a $(\theta, c)$ grid.
+
+The decisive comparison at $\theta=1$, $\alpha=0.4$, $\beta=0.7$:
+
+| | output |
+|---|---:|
+| decentralized, no enclosure ($\mu=0,\ t_e=0$) | 1.236 |
+| decentralized, full enclosure ($\mu=0,\ t_e=1$) | 1.397 $-\ c\bar T$ |
+| **regulated commons, no enclosure ($\mu=1,\ t_e=0$)** | **1.397** |
+
+Enclosure closes the whole 0.161 gap — and so does regulating the commons, at $t_e=0$, for
+no enclosure cost. **Enclosure is a second-best instrument here**: it repairs the labor
+misallocation by abolishing the institution that caused it, which works, but pays $c\bar T$
+for what governance delivers directly. It beats doing nothing only while $c\bar T < 0.161$,
+and it never beats fixing the commons.
+
+That is the defensible claim, and it is *not* the enclosure-friendly one: where enclosure
+raises output without raising productivity, it is substituting for institutional reform, not
+achieving something reform could not. It also puts the $\mu$-vs-$t_e$ trade-off — two costly
+instruments aimed at one distortion — squarely on the agenda; $\tau$ belongs in that
+comparison too.
+
+One band worth knowing about: for $\theta$ slightly below 1 the commons distortion is still
+large enough that full enclosure raises *decentralized* output while lowering the planner's
+— down to $\theta \approx 0.73$ at these parameters. Unlike $\theta_H$ that crossover is
+parameter-dependent (0.89 at $\alpha=\beta=0.5$, 0.42 at $p=2$), so it is a feature of the
+example, not a result.
 
 **b. Does enclosure raise or lower measured aggregate TFP?** This is the bridge to the
 literature. Aggregate output per worker can rise purely because labor moved from a
@@ -167,18 +283,39 @@ promising differentiator for a separate paper. It also suggests an empirical pre
 labor-release effect of enclosure should be **strongest where the productivity gain is
 smallest**, which is the opposite of what a pure technology story predicts.
 
+The §3 correction sharpens this rather than weakening it. The labor-sponge channel is not
+just a measurement artefact to be netted out — per §4a it is a genuine output gain, since
+the commons really was holding too much labor on the land. So enclosure can raise output
+*through the labor margin alone*, with plot-level TFP held fixed at $\theta=1$ — exactly
+the case the skill-sorting literature has no mechanism for.
+
+The normative half is the more distinctive contribution, and it cuts the other way: that
+gain is available without enclosure, by regulating the commons instead. The model therefore
+delivers a **second-best** account of historical enclosure — the right frame for a
+literature that has mostly asked whether enclosure raised productivity, when the sharper
+question is whether it was the cheapest available fix for what was actually wrong. That also
+connects the paper to the Ostrom-style evidence on commons governance in a way the
+skill-sorting papers cannot.
+
 ---
 
 ## 6. Practical notes
 
 - Work in `open-enclose.github.io`; `pip install -e ".[dev]"`, then `pytest tests/`.
 - `enclose.model` is numpy-only; `enclose.manufacturing` adds scipy (`brentq`).
-- **`labor_share` takes `mu` and threads it through** — there is a test guarding that,
-  because an earlier bug in `tepvt_g` accepted `mu` and silently ignored it. Watch for that
-  failure mode in anything new.
+- **`mu` gets accepted and then half-used.** This has now bitten three times: `tepvt_g`
+  ignored it outright; `manufacturing` kept it in $\Lambda_\mu$ but dropped it from $A_\mu$
+  (§3); and `mpl_a` defaulted to `mu=1` while `labor_share` and `excess_mpl` defaulted to
+  `mu=0`, so the same defaulted call meant two different economies. All three are fixed and
+  guarded. Assume the next one exists and test $\mu$ endpoints explicitly.
+- **`model.weq` returns the commons *average* product for every $\mu$**, not the wage; the
+  true wage is $A_\mu \cdot$ `weq`. Harmless in the two-sector model, where the level does
+  not affect the allocation — which is exactly why it went unnoticed until manufacturing
+  gave that level an allocative job. Anything new that reads `weq` as a wage needs the
+  $A_\mu$ factor.
 - `enclose.symbolic` derives every benchmark locus from its objective and checks the numeric
-  layer against it. Nothing equivalent exists for the manufacturing case yet; adding it
-  would be the natural way to verify §3's derivation.
+  layer against it. Nothing equivalent exists for the manufacturing case yet. The §3 sympy
+  derivation was throwaway; folding it in is the natural guard against the next slip.
 - The two drafts (§1) should be reconciled before any write-up. `enclosure_manuf.md` is
   canonical.
 - `plotmpts` / `figures.labor_misallocation` still carries `TODO: not yet working for
